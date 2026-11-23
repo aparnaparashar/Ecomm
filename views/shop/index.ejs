@@ -1,0 +1,165 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  
+  <!-- Page Header & Breadcrumbs (Experiment 9) -->
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">The Runway</span>
+      <h1 class="header-main-title"><%= pageName %></h1>
+      <div class="gold-accent-line"></div>
+      
+      <div class="breadcrumbs-trail">
+        <a href="/">Home</a>
+        <span class="trail-sep">/</span>
+        <a href="/products">Collections</a>
+        <% if (breadcrumbs && breadcrumbs.title) { %>
+          <span class="trail-sep">/</span>
+          <span class="trail-current"><%= breadcrumbs.title %></span>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <!-- Catalog Section -->
+  <section class="meridian-section catalog-section">
+    <div class="catalog-layout">
+      
+      <!-- Filter Sidebar (Experiment 3 & 5) -->
+      <aside class="catalog-sidebar">
+        <div class="sidebar-block">
+          <h3 class="sidebar-heading">Collections</h3>
+          <ul class="sidebar-filter-list">
+            <li>
+              <a href="/products" class="<%= selectedCategory === 'all' ? 'active' : '' %>">
+                All Collections
+              </a>
+            </li>
+            <% if (typeof categories !== 'undefined' && categories) { %>
+              <% categories.forEach(cat => { %>
+                <li>
+                  <a href="/products/category/<%= cat.slug %>" class="<%= selectedCategory === cat.slug ? 'active' : '' %>">
+                    <%= cat.title %>
+                  </a>
+                </li>
+              <% }) %>
+            <% } %>
+          </ul>
+        </div>
+
+        <div class="sidebar-block">
+          <h3 class="sidebar-heading">Client Assurance</h3>
+          <div class="sidebar-card">
+            <p><i class="fas fa-gem gold-text"></i> 100% Genuine Couture</p>
+            <p><i class="fas fa-shield-alt gold-text"></i> Encrypted Checkout</p>
+            <p><i class="fas fa-truck gold-text"></i> White-glove Dispatch</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Product Stream -->
+      <div class="catalog-content">
+        
+        <div class="catalog-toolbar">
+          <span class="count-indicator">Showing <%= products.length %> of <%= totalCount %> pieces</span>
+          
+          <div class="toolbar-sort">
+            <label for="sortSelector">Sort:</label>
+            <select id="sortSelector" class="form-control-compact" onchange="window.location.href=this.value">
+              <option value="<%= home %>sort=-createdAt" <%= selectedSort === '-createdAt' ? 'selected' : '' %>>Newest First</option>
+              <option value="<%= home %>sort=price" <%= selectedSort === 'price' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="<%= home %>sort=-price" <%= selectedSort === '-price' ? 'selected' : '' %>>Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Products Grid (Experiment 5: 4 main elements: Image, Name, Price, Add to Cart) -->
+        <div class="products-grid catalog-grid">
+          <% if (products && products.length > 0) { %>
+            <% products.forEach(product => { %>
+              <div class="meridian-product-card">
+                
+                <div class="card-media-wrapper">
+                  <a href="/products/<%= product._id %>" class="card-media-link">
+                    <img src="<%= product.imagePath %>" alt="<%= product.title %>" class="product-thumb">
+                  </a>
+                  
+                  <!-- Availability Status (Experiment 3 & 5) -->
+                  <% if (product.available) { %>
+                    <span class="stock-badge in-stock">In Stock</span>
+                  <% } else { %>
+                    <span class="stock-badge out-stock">Sold Out</span>
+                  <% } %>
+
+                  <form action="/cart/add-to-cart/<%= product._id %>" method="POST" class="quick-add-form">
+                    <button type="submit" class="quick-add-btn" <%= !product.available ? 'disabled' : '' %>>
+                      <i class="fas fa-plus"></i> Add to Bag
+                    </button>
+                  </form>
+                </div>
+
+                <div class="card-body">
+                  <div class="card-meta">
+                    <span class="product-cat-name"><%= product.category ? product.category.title : 'Apparel' %></span>
+                    <span class="product-code-pill"><%= product.productCode %></span>
+                  </div>
+                  <% if (product.designer) { %>
+                    <div class="product-card-designer">
+                      <i class="fas fa-feather-alt gold-text"></i> <%= product.designer %>
+                    </div>
+                  <% } %>
+                  <h3 class="card-title">
+                    <a href="/products/<%= product._id %>"><%= product.title %></a>
+                  </h3>
+                  <div class="card-foot">
+                    <span class="price-tag">₹<%= product.price.toLocaleString('en-IN') %></span>
+                    <span class="brand-sub"><%= product.manufacturer %></span>
+                  </div>
+                </div>
+
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="empty-state catalog-empty">
+              <i class="fas fa-search empty-icon"></i>
+              <h3>No Items Found</h3>
+              <p>We could not locate any pieces matching your current filters.</p>
+              <a href="/products" class="meridian-btn btn-primary">Reset Runway Filters</a>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Pagination (Experiment 9) -->
+        <% if (pages > 1) { %>
+          <div class="meridian-pagination">
+            <% if (current > 1) { %>
+              <a href="<%= home %>page=<%= current - 1 %>&sort=<%= selectedSort %>" class="page-step">
+                <i class="fas fa-chevron-left"></i> Previous
+              </a>
+            <% } %>
+
+            <div class="page-numbers">
+              <% for (let i = 1; i <= pages; i++) { %>
+                <a href="<%= home %>page=<%= i %>&sort=<%= selectedSort %>" class="page-num <%= i === current ? 'active' : '' %>">
+                  <%= i %>
+                </a>
+              <% } %>
+            </div>
+
+            <% if (current < pages) { %>
+              <a href="<%= home %>page=<%= current + 1 %>&sort=<%= selectedSort %>" class="page-step">
+                Next <i class="fas fa-chevron-right"></i>
+              </a>
+            <% } %>
+          </div>
+        <% } %>
+
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<%- include('../partials/footer') %>

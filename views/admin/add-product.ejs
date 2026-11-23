@@ -1,0 +1,86 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Atelier Curator</span>
+      <h1 class="header-main-title">Catalog New Piece</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-form-section">
+    <div class="form-wrapper-narrow">
+      <form action="/admin/add-product" method="POST" enctype="multipart/form-data" class="meridian-form admin-product-form">
+        
+        <div class="form-group">
+          <label for="title">Piece Title *</label>
+          <input type="text" id="title" name="title" class="form-control" required placeholder="e.g. Sovereign Italian Cashmere Coat">
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="productCode">Product / SKU Code *</label>
+            <input type="text" id="productCode" name="productCode" class="form-control" required placeholder="e.g. MRD-MEN-05">
+          </div>
+          <div class="form-group">
+            <label for="price">Price (₹ INR) *</label>
+            <input type="number" id="price" name="price" class="form-control" required min="0" step="1" placeholder="4999">
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" name="category" class="form-control" required>
+              <option value="">Select Collection</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat._id %>"><%= cat.title %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="manufacturer">Atelier / Brand</label>
+            <input type="text" id="manufacturer" name="manufacturer" class="form-control" value="Meridian Atelier" placeholder="Brand / Maker">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Piece Narrative / Description *</label>
+          <textarea id="description" name="description" class="form-control" rows="5" required placeholder="Provide details on drape, silhouette, weave, and styling recommendations."></textarea>
+        </div>
+
+        <!-- Image Upload or URL (Experiment 3) -->
+        <div class="form-group">
+          <label for="image">Upload Image File (JPG, PNG, WebP)</label>
+          <input type="file" id="image" name="image" class="form-control-file" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl">Or Direct Image URL (Optional)</label>
+          <input type="url" id="imageUrl" name="imageUrl" class="form-control" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="form-checkbox-row">
+          <label class="custom-checkbox">
+            <input type="checkbox" name="available" checked>
+            <span>In Stock / Available for Immediate Purchase</span>
+          </label>
+          <label class="custom-checkbox">
+            <input type="checkbox" name="featured">
+            <span>Mark as Featured Runway Creation</span>
+          </label>
+        </div>
+
+        <div class="form-actions-row">
+          <button type="submit" class="meridian-btn btn-primary btn-lg">Publish Piece</button>
+          <a href="/admin" class="meridian-btn btn-outline">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

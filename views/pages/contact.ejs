@@ -1,0 +1,96 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Client Care & Inquiries</span>
+      <h1 class="header-main-title">Concierge Atelier</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section contact-section">
+    <div class="contact-grid">
+      
+      <!-- Contact Info -->
+      <div class="contact-info-col">
+        <h3>Private Salon Appointments</h3>
+        <p class="contact-lead">Our bespoke stylists and customer concierge stand ready to assist your acquisitions.</p>
+
+        <div class="contact-item-group">
+          <div class="c-item">
+            <span class="c-icon"><i class="fas fa-map-marker-alt"></i></span>
+            <div>
+              <strong>Department of CSE</strong>
+              <p>Indira Gandhi Delhi Technical University For Women<br>Kashmere Gate, New Delhi - 110006</p>
+            </div>
+          </div>
+
+          <div class="c-item">
+            <span class="c-icon"><i class="fas fa-phone-alt"></i></span>
+            <div>
+              <strong>Telephone Direct</strong>
+              <p>+91 11 2390 0200 / +91 98765 43210</p>
+            </div>
+          </div>
+
+          <div class="c-item">
+            <span class="c-icon"><i class="fas fa-envelope"></i></span>
+            <div>
+              <strong>Electronic Dispatch</strong>
+              <p>concierge@meridian.style<br>support@meridian.style</p>
+            </div>
+          </div>
+
+          <div class="c-item">
+            <span class="c-icon"><i class="fas fa-clock"></i></span>
+            <div>
+              <strong>Salon Hours</strong>
+              <p>Monday — Saturday: 10:00 — 20:00 IST</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form (Experiment 4: Validation with Express-Validator) -->
+      <div class="contact-form-col">
+        <div class="form-wrapper-box">
+          <h3 class="box-title">Transmit An Inquiry</h3>
+          <p class="box-sub">Complete the form below. Minimum 10 characters required in message.</p>
+
+          <form action="/contact" method="POST" class="meridian-form contact-form">
+            
+            <div class="form-group">
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" class="form-control" required placeholder="e.g. Aparna Sharma">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" class="form-control" required placeholder="client@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject / Inquiry Nature</label>
+              <input type="text" id="subject" name="subject" class="form-control" placeholder="Bespoke sizing, runway order, or press">
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message Narrative (Min 10 characters) *</label>
+              <textarea id="message" name="message" class="form-control" rows="5" required minlength="10" placeholder="Please articulate your query..."></textarea>
+            </div>
+
+            <button type="submit" class="meridian-btn btn-primary btn-block btn-lg">
+              <i class="fas fa-paper-plane"></i> Transmit Message
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

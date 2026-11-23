@@ -1,0 +1,146 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Client Selections</span>
+      <h1 class="header-main-title">Shopping Bag</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section cart-page-section">
+    <div class="cart-layout-container">
+      
+      <% if (products && products.length > 0) { %>
+        <!-- Cart Table List -->
+        <div class="cart-items-column">
+          <div class="cart-table-card">
+            
+            <div class="cart-table-head">
+              <span class="col-product">Creation</span>
+              <span class="col-price">Unit Price</span>
+              <span class="col-qty">Quantity</span>
+              <span class="col-total">Subtotal</span>
+              <span class="col-action">Remove</span>
+            </div>
+
+            <div class="cart-table-body">
+              <% products.forEach(item => { %>
+                <div class="cart-item-row">
+                  
+                  <!-- Product Media & Title -->
+                  <div class="cart-product-cell">
+                    <a href="/products/<%= item._id %>" class="cart-thumb-link">
+                      <img src="<%= item.imagePath %>" alt="<%= item.title %>" class="cart-thumb">
+                    </a>
+                    <div class="cart-product-info">
+                      <span class="cart-item-cat"><%= item.category ? item.category.title : 'Apparel' %></span>
+                      <h4 class="cart-item-title">
+                        <a href="/products/<%= item._id %>"><%= item.title %></a>
+                      </h4>
+                      <small class="cart-item-code">Ref: <%= item.productCode %></small>
+                    </div>
+                  </div>
+
+                  <!-- Unit Price -->
+                  <div class="cart-price-cell">
+                    ₹<%= item.price.toLocaleString('en-IN') %>
+                  </div>
+
+                  <!-- Quantity Stepper (Experiment 10) -->
+                  <div class="cart-qty-cell">
+                    <div class="qty-stepper">
+                      <form action="/cart/reduce/<%= item._id %>" method="POST" style="display:inline">
+                        <button type="submit" class="stepper-btn" title="Reduce Quantity">−</button>
+                      </form>
+                      <span class="stepper-val"><%= item.qty %></span>
+                      <form action="/cart/add-to-cart/<%= item._id %>" method="POST" style="display:inline">
+                        <button type="submit" class="stepper-btn" title="Increase Quantity">+</button>
+                      </form>
+                    </div>
+                  </div>
+
+                  <!-- Subtotal -->
+                  <div class="cart-total-cell">
+                    <strong>₹<%= item.totalPrice.toLocaleString('en-IN') %></strong>
+                  </div>
+
+                  <!-- Remove Button -->
+                  <div class="cart-action-cell">
+                    <form action="/cart/remove/<%= item._id %>" method="POST">
+                      <button type="submit" class="trash-btn" title="Remove piece">
+                        <i class="far fa-trash-alt"></i>
+                      </button>
+                    </form>
+                  </div>
+
+                </div>
+              <% }) %>
+            </div>
+
+            <div class="cart-table-foot">
+              <a href="/products" class="meridian-btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Continue Exploring Runway
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Order Summary Column (Experiment 10) -->
+        <div class="cart-summary-column">
+          <div class="summary-receipt-card">
+            <h3 class="summary-title">Order Ledger</h3>
+            <div class="gold-accent-line"></div>
+
+            <div class="summary-line">
+              <span>Items Total (<%= totalQty %> pieces)</span>
+              <span>₹<%= totalCost.toLocaleString('en-IN') %></span>
+            </div>
+
+            <div class="summary-line">
+              <span>White-Glove Shipping</span>
+              <span class="complimentary-text">COMPLIMENTARY</span>
+            </div>
+
+            <div class="summary-line">
+              <span>Luxury Packaging & Box</span>
+              <span class="complimentary-text">INCLUDED</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total-row">
+              <span class="total-label">Grand Total</span>
+              <span class="total-amount">₹<%= totalCost.toLocaleString('en-IN') %></span>
+            </div>
+
+            <div class="summary-cta-group">
+              <a href="/cart/checkout" class="meridian-btn btn-primary btn-block btn-lg">
+                <i class="fas fa-lock"></i> Proceed to Checkout
+              </a>
+            </div>
+
+            <div class="summary-security-note">
+              <i class="fas fa-shield-alt"></i> 256-Bit SSL Encrypted Transaction
+            </div>
+          </div>
+        </div>
+
+      <% } else { %>
+        <!-- Empty Cart -->
+        <div class="empty-state cart-empty-full">
+          <div class="empty-glyph"><i class="fas fa-shopping-bag"></i></div>
+          <h2>Your Shopping Bag is Currently Empty</h2>
+          <p>The runway awaits your discernment. Explore our bespoke collections.</p>
+          <a href="/products" class="meridian-btn btn-primary btn-lg">Discover Collections</a>
+        </div>
+      <% } %>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

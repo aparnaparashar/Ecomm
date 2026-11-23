@@ -1,0 +1,78 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Atelier Ledger</span>
+      <h1 class="header-main-title">Client Orders Log</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-section">
+    <div class="admin-wrapper">
+      
+      <div class="admin-panel-card">
+        <div class="panel-header-row">
+          <h3 class="panel-heading"><i class="fas fa-receipt gold-text"></i> Dispatched & Pending Orders</h3>
+          <a href="/admin" class="meridian-btn btn-outline btn-sm">Back to Console</a>
+        </div>
+
+        <% if (orders && orders.length > 0) { %>
+          <div class="admin-table-scroll">
+            <table class="meridian-table">
+              <thead>
+                <tr>
+                  <th>Order Ref</th>
+                  <th>Client</th>
+                  <th>Items & Total</th>
+                  <th>Destination</th>
+                  <th>Date</th>
+                  <th>Delivery Status</th>
+                  <th>Toggle State</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach(o => { %>
+                  <tr>
+                    <td><strong>#<%= o._id.toString().slice(-8).toUpperCase() %></strong></td>
+                    <td>
+                      <%= o.user ? o.user.username : 'Guest' %><br>
+                      <small class="code-sub"><%= o.user ? o.user.email : '' %></small>
+                    </td>
+                    <td>
+                      <strong><%= o.cart ? o.cart.totalQty : 0 %> pieces</strong><br>
+                      <span class="gold-text">₹<%= o.cart ? o.cart.totalCost.toLocaleString('en-IN') : 0 %></span>
+                    </td>
+                    <td><small><%= o.address %></small></td>
+                    <td><%= new Date(o.createdAt).toLocaleDateString('en-IN') %></td>
+                    <td>
+                      <span class="status-indicator <%= o.delivered ? 'in-stock' : 'out-stock' %>">
+                        <%= o.delivered ? 'DELIVERED' : 'IN TRANSIT' %>
+                      </span>
+                    </td>
+                    <td>
+                      <form action="/admin/toggle-delivery/<%= o._id %>" method="POST">
+                        <button type="submit" class="meridian-btn btn-outline btn-sm">
+                          Mark as <%= o.delivered ? 'Processing' : 'Delivered' %>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No orders registered in the ledger yet.</p>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

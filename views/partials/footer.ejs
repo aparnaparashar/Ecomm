@@ -1,0 +1,83 @@
+<footer class="meridian-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      
+      <!-- Brand & Mission -->
+      <div class="footer-col brand-col">
+        <a href="/" class="footer-brand">
+          <span class="brand-title">MERIDIAN</span>
+        </a>
+        <p class="footer-tagline">
+          Haute couture and contemporary apparel handcrafted with uncompromising precision. Find your true north in bespoke elegance.
+        </p>
+        <div class="footer-social-strip">
+          <a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-btn" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+          <a href="#" class="social-btn" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        </div>
+      </div>
+
+      <!-- Categories Links (Experiment 2 & 3) -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Collections</h4>
+        <ul class="footer-nav">
+          <li><a href="/products">All Apparel</a></li>
+          <% if (typeof categories !== 'undefined' && categories) { %>
+            <% categories.forEach(cat => { %>
+              <li><a href="/products/category/<%= cat.slug %>"><%= cat.title %></a></li>
+            <% }) %>
+          <% } %>
+          <li><a href="/products?sort=price">Prêt-à-Porter</a></li>
+        </ul>
+      </div>
+
+      <!-- Atelier & Services -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Maison</h4>
+        <ul class="footer-nav">
+          <li><a href="/about">The Heritage</a></li>
+          <li><a href="/designers">Master Couturiers</a></li>
+          <li><a href="/contact">Concierge Support</a></li>
+          <li><a href="/cart/shopping-cart">Shopping Bag</a></li>
+          <% if (typeof login !== 'undefined' && login) { %>
+            <li><a href="/user/profile">Client Portfolio</a></li>
+          <% } else { %>
+            <li><a href="/user/signin">Client Access</a></li>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Contact Info & Lab Credentials -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Atelier Flagship</h4>
+        <div class="footer-contact-details">
+          <p><i class="fas fa-map-marker-alt"></i> Department of CSE, IGDTUW, Kashmere Gate, Delhi</p>
+          <p><i class="fas fa-phone-alt"></i> +91 11 2390 0200</p>
+          <p><i class="fas fa-envelope"></i> concierge@meridian.style</p>
+          <div class="lab-badge">
+            <span class="badge-title">E-COMMERCE (BIT-417)</span>
+            <span class="badge-desc">Node.js · Express · MongoDB · Passport</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Copyright -->
+    <div class="footer-bottom-row">
+      <p>&copy; <%= new Date().getFullYear() %> MERIDIAN Fashion House. All Rights Reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="/about">Privacy Policy</a>
+        <span class="sep">/</span>
+        <a href="/about">Terms of Couture</a>
+        <span class="sep">/</span>
+        <a href="/contact">Client Care</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

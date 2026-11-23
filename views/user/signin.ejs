@@ -1,0 +1,60 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page auth-page">
+  <div class="auth-box-card">
+    
+    <div class="auth-header">
+      <h1 class="auth-title">Maison Access</h1>
+      <p class="auth-subtitle">Sign in to your client portfolio & order ledger</p>
+      <div class="gold-accent-line"></div>
+    </div>
+
+    <!-- Form Validation Feedback (Experiment 4) -->
+    <form action="/user/signin" method="POST" class="meridian-form auth-form">
+      
+      <div class="form-group">
+        <label for="email">Client Email Address *</label>
+        <div class="input-with-icon">
+          <i class="fas fa-envelope input-icon"></i>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-control" 
+            required 
+            placeholder="client@meridian.style"
+            autocomplete="email"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <div class="input-with-icon">
+          <i class="fas fa-lock input-icon"></i>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-control" 
+            required 
+            placeholder="At least 4 characters"
+            autocomplete="current-password"
+          >
+        </div>
+      </div>
+
+      <button type="submit" class="meridian-btn btn-primary btn-block btn-lg">
+        Sign In to Atelier
+      </button>
+
+      <div class="auth-footer-prompt">
+        <p>New to Meridian? <a href="/user/signup">Join The House</a></p>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

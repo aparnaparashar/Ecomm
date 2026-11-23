@@ -1,0 +1,136 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page admin-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Atelier Management</span>
+      <h1 class="header-main-title">Console Dashboard</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-section">
+    <div class="admin-wrapper">
+      
+      <!-- Live Database Metrics Strip (Live MongoDB Aggregates) -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <i class="fas fa-coins metric-icon"></i>
+          <span class="metric-val">₹<%= stats.totalRevenue.toLocaleString('en-IN') %></span>
+          <span class="metric-label">All-Time Revenue</span>
+          <small class="metric-sub"><%= stats.totalItemsSold %> items delivered</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-shopping-bag metric-icon"></i>
+          <span class="metric-val"><%= stats.totalOrders %></span>
+          <span class="metric-label">Client Acquisitions</span>
+          <small class="metric-sub">Avg ₹<%= stats.avgOrderValue.toLocaleString('en-IN') %> / order</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-tshirt metric-icon"></i>
+          <span class="metric-val"><%= stats.totalProducts %></span>
+          <span class="metric-label">Creations Catalogued</span>
+          <small class="metric-sub"><%= stats.inStockCount %> In Stock · <%= stats.featuredCount %> Featured</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-users metric-icon"></i>
+          <span class="metric-val"><%= stats.totalClients %></span>
+          <span class="metric-label">Registered Clientele</span>
+          <small class="metric-sub"><%= stats.totalCategories %> Active Collections</small>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="admin-quick-actions">
+        <a href="/admin/add-product" class="meridian-btn btn-primary">
+          <i class="fas fa-plus"></i> Curate New Piece
+        </a>
+        <a href="/admin/orders" class="meridian-btn btn-outline">
+          <i class="fas fa-clipboard-list"></i> View All Orders
+        </a>
+      </div>
+
+      <!-- Category Creator (Experiment 3) -->
+      <div class="admin-panel-card">
+        <h3 class="panel-heading"><i class="fas fa-tags gold-text"></i> Collections & Categorization</h3>
+        <form action="/admin/add-category" method="POST" class="inline-add-category-form">
+          <input type="text" name="title" placeholder="New collection name (e.g. Formal, Eveningwear)" class="form-control" required>
+          <input type="text" name="description" placeholder="Short description" class="form-control">
+          <button type="submit" class="meridian-btn btn-primary">Establish Category</button>
+        </form>
+
+        <div class="category-pills-row">
+          <% categories.forEach(cat => { %>
+            <div class="cat-pill-badge">
+              <span><%= cat.title %> (<%= cat.slug %>)</span>
+              <form action="/admin/delete-category/<%= cat._id %>" method="POST" style="display:inline">
+                <button type="submit" class="cat-del-btn" onclick="return confirm('Remove category <%= cat.title %>?')" title="Delete">&times;</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Products Management Table (Experiment 3) -->
+      <div class="admin-panel-card">
+        <div class="panel-header-row">
+          <h3 class="panel-heading"><i class="fas fa-boxes gold-text"></i> Catalogue Inventory</h3>
+          <a href="/admin/add-product" class="meridian-btn btn-outline btn-sm">+ Add Piece</a>
+        </div>
+
+        <div class="admin-table-scroll">
+          <table class="meridian-table">
+            <thead>
+              <tr>
+                <th>Piece Media</th>
+                <th>Title & Code</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Atelier Brand</th>
+                <th>State</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% products.forEach(p => { %>
+                <tr>
+                  <td>
+                    <img src="<%= p.imagePath %>" alt="<%= p.title %>" class="admin-table-thumb">
+                  </td>
+                  <td>
+                    <strong><%= p.title %></strong><br>
+                    <small class="code-sub"><%= p.productCode %></small>
+                  </td>
+                  <td><%= p.category ? p.category.title : 'Unassigned' %></td>
+                  <td>₹<%= p.price.toLocaleString('en-IN') %></td>
+                  <td><%= p.manufacturer %></td>
+                  <td>
+                    <span class="status-indicator <%= p.available ? 'in-stock' : 'out-stock' %>">
+                      <%= p.available ? 'IN STOCK' : 'OUT OF STOCK' %>
+                    </span>
+                  </td>
+                  <td>
+                    <div class="action-btn-group">
+                      <a href="/admin/edit-product/<%= p._id %>" class="tbl-action-btn edit" title="Edit">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <form action="/admin/delete-product/<%= p._id %>" method="POST" style="display:inline">
+                        <button type="submit" class="tbl-action-btn delete" onclick="return confirm('Delete piece <%= p.title %>?')" title="Delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

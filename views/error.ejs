@@ -1,0 +1,17 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<main class="meridian-error-page">
+  <div class="error-container">
+    <div class="error-glyph">◇</div>
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title"><%= pageName %></h2>
+    <p class="error-desc"><%= typeof message !== 'undefined' ? message : "The requested piece has departed the runway or was never woven." %></p>
+    <div class="error-actions">
+      <a href="/" class="meridian-btn btn-primary">Return to Maison</a>
+      <a href="/products" class="meridian-btn btn-outline">Explore All Pieces</a>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

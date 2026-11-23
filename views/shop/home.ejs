@@ -1,0 +1,268 @@
+<%- include('../partials/head') %>
+
+<!-- SIGNATURE MERIDIAN LOGO ANIMATION OVERLAY -->
+<div class="meridian-logo-overlay" id="meridianLogoOverlay">
+  <div class="logo-anim-stage">
+    <div class="anim-diamond-wrapper">
+      <svg viewBox="0 0 100 100" class="anim-svg">
+        <polygon points="50,5 95,50 50,95 5,50" class="diamond-path" fill="none" stroke="#c9a96e" stroke-width="1.8"/>
+        <line x1="50" y1="18" x2="50" y2="82" stroke="rgba(201,169,110,0.4)" stroke-width="1" class="compass-line"/>
+        <line x1="18" y1="50" x2="82" y2="50" stroke="rgba(201,169,110,0.4)" stroke-width="1" class="compass-line"/>
+        <circle cx="50" cy="50" r="4" fill="#c9a96e"/>
+      </svg>
+    </div>
+    <h1 class="meridian-anim-title">MERIDIAN</h1>
+    <p class="meridian-anim-tagline">ATELIER · HAUTE APPAREL</p>
+  </div>
+</div>
+
+<%- include('../partials/navbar') %>
+
+<main class="home-page-container">
+
+  <!-- 1. HERO CAROUSEL (Experiment 2) -->
+  <section class="meridian-hero" id="heroCarousel">
+    <div class="hero-slides-wrapper">
+      
+      <!-- Slide 1 -->
+      <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920');">
+        <div class="hero-slide-content">
+          <span class="hero-pretitle">Fall / Winter Collection</span>
+          <h1 class="hero-heading">The Geometry<br>Of Elegance</h1>
+          <p class="hero-text">Bespoke outerwear and refined evening drapery, engineered for timeless distinction.</p>
+          <div class="hero-cta-group">
+            <a href="/products" class="meridian-btn btn-primary">Explore Collections</a>
+            <a href="/products/category/women" class="meridian-btn btn-outline">Explore Women</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1920');">
+        <div class="hero-slide-content">
+          <span class="hero-pretitle">Sartorial Precision</span>
+          <h1 class="hero-heading">Mastered<br>Tailoring</h1>
+          <p class="hero-text">Italian virgin wools and crisp Egyptian cottons woven into effortless power silhouettes.</p>
+          <div class="hero-cta-group">
+            <a href="/products/category/men" class="meridian-btn btn-primary">Men's Atelier</a>
+            <a href="/products" class="meridian-btn btn-outline">View Catalog</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=1920');">
+        <div class="hero-slide-content">
+          <span class="hero-pretitle">Petite Haute Couture</span>
+          <h1 class="hero-heading">Celestial<br>Whimsy</h1>
+          <p class="hero-text">Organic luxury fabrics and joyful velvet dresses designed for tomorrow's tastemakers.</p>
+          <div class="hero-cta-group">
+            <a href="/products/category/kids" class="meridian-btn btn-primary">Kids Collection</a>
+            <a href="/products" class="meridian-btn btn-outline">All Pieces</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Carousel Nav Buttons -->
+    <button class="carousel-arrow prev-arrow" id="heroPrevBtn" aria-label="Previous Slide">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <button class="carousel-arrow next-arrow" id="heroNextBtn" aria-label="Next Slide">
+      <i class="fas fa-arrow-right"></i>
+    </button>
+
+    <!-- Carousel Indicators -->
+    <div class="carousel-dots-container">
+      <span class="carousel-dot active"></span>
+      <span class="carousel-dot"></span>
+      <span class="carousel-dot"></span>
+    </div>
+  </section>
+
+  <!-- 2. VALUE PROPOSITIONS STRIP (Experiment 1 & 2) -->
+  <section class="meridian-propositions">
+    <div class="propositions-grid">
+      <div class="prop-item">
+        <div class="prop-text">
+          <h4>Artisanal Craftsmanship</h4>
+          <p>Hand-finished garments crafted with master European & Indian artisans.</p>
+        </div>
+      </div>
+      <div class="prop-item">
+        <div class="prop-text">
+          <h4>Complimentary Dispatch</h4>
+          <p>Worldwide insured white-glove delivery on all orders.</p>
+        </div>
+      </div>
+      <div class="prop-item">
+        <div class="prop-text">
+          <h4>Bespoke Exchange</h4>
+          <p>30-day personalized return service on all catalogue pieces.</p>
+        </div>
+      </div>
+      <div class="prop-item">
+        <div class="prop-text">
+          <h4>Stylist Concierge</h4>
+          <p>Dedicated bespoke sizing guidance and round-the-clock client assistance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. CATEGORIES SPOTLIGHT (Experiment 2 & 3) -->
+  <section class="meridian-section categories-section">
+    <div class="section-heading-block">
+      <span class="section-sub">Curated Directions</span>
+      <h2 class="section-title">Explore Collections</h2>
+      <div class="gold-accent-line"></div>
+    </div>
+
+    <div class="categories-mosaic">
+      <% if (categories && categories.length > 0) { %>
+        <% categories.forEach(cat => { %>
+          <div class="category-tile">
+            <div class="cat-image-wrapper">
+              <img src="<%= cat.image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800' %>" alt="<%= cat.title %>">
+            </div>
+            <div class="cat-tile-overlay">
+              <span class="cat-pre">Couture</span>
+              <h3 class="cat-name"><%= cat.title %></h3>
+              <p class="cat-desc"><%= cat.description %></p>
+              <a href="/products/category/<%= cat.slug %>" class="cat-link">
+                View Collection <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- 4. LATEST PRODUCTS / PRIORITY OF ITEMS (Experiment 3 & 5) -->
+  <section class="meridian-section products-section">
+    <div class="section-heading-block">
+      <span class="section-sub">Seasonal Runway</span>
+      <h2 class="section-title">Latest Arrivals</h2>
+      <div class="gold-accent-line"></div>
+      <p class="section-intro">Freshly catalogued garments prioritized by atelier release date.</p>
+    </div>
+
+    <div class="products-grid">
+      <% if (latestProducts && latestProducts.length > 0) { %>
+        <% latestProducts.forEach(product => { %>
+          <div class="meridian-product-card">
+            
+            <div class="card-media-wrapper">
+              <a href="/products/<%= product._id %>" class="card-media-link">
+                <img src="<%= product.imagePath %>" alt="<%= product.title %>" class="product-thumb">
+              </a>
+              
+              <!-- State of Order Badge (Experiment 3 & 5) -->
+              <% if (product.available) { %>
+                <span class="stock-badge in-stock"><i class="fas fa-check"></i> In Stock</span>
+              <% } else { %>
+                <span class="stock-badge out-stock"><i class="fas fa-times"></i> Sold Out</span>
+              <% } %>
+
+              <% if (product.featured) { %>
+                <span class="featured-badge">Featured</span>
+              <% } %>
+
+              <!-- Quick Add Action -->
+              <form action="/cart/add-to-cart/<%= product._id %>" method="POST" class="quick-add-form">
+                <button type="submit" class="quick-add-btn" title="Add to Bag" <%= !product.available ? 'disabled' : '' %>>
+                  <i class="fas fa-plus"></i> Add to Bag
+                </button>
+              </form>
+            </div>
+
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="product-cat-name"><%= product.category ? product.category.title : 'Apparel' %></span>
+                <span class="product-code-pill"><%= product.productCode %></span>
+              </div>
+              <% if (product.designer) { %>
+                <div class="product-card-designer">
+                  <i class="fas fa-feather-alt gold-text"></i> <%= product.designer %>
+                </div>
+              <% } %>
+              <h3 class="card-title">
+                <a href="/products/<%= product._id %>"><%= product.title %></a>
+              </h3>
+              <div class="card-foot">
+                <span class="price-tag">₹<%= product.price.toLocaleString('en-IN') %></span>
+                <span class="brand-sub"><%= product.manufacturer %></span>
+              </div>
+            </div>
+
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="empty-state">
+          <p>No creations available currently. Please run seed script.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="section-action-center">
+      <a href="/products" class="meridian-btn btn-primary">View Full Runway Catalogue</a>
+    </div>
+  </section>
+
+  <!-- 4.5 MASTER COUTURIERS SPOTLIGHT (Novelty Feature) -->
+  <section class="meridian-section couturiers-spotlight-section">
+    <div class="section-header">
+      <span class="section-sub">Haute Craftsmanship</span>
+      <h2 class="section-title">Designed by Master Couturiers</h2>
+      <div class="gold-accent-line"></div>
+      <p class="section-intro">Every garment originates from the sketchpads of world-renowned resident artisans across Milan, Paris, New Delhi, Lyon, and Tokyo.</p>
+    </div>
+    
+    <div class="couturiers-strip">
+      <div class="couturier-pill-card">
+        <span class="c-origin">Milan</span>
+        <h4>Alessandro Rossi</h4>
+        <p>Savile Row & Quad Tailoring</p>
+      </div>
+      <div class="couturier-pill-card">
+        <span class="c-origin">Paris</span>
+        <h4>Elena Rostova</h4>
+        <p>Haute Evening Silk Drapery</p>
+      </div>
+      <div class="couturier-pill-card">
+        <span class="c-origin">New Delhi</span>
+        <h4>Aarav Mehra</h4>
+        <p>Zardozi & Banarasi Brocade</p>
+      </div>
+      <div class="couturier-pill-card">
+        <span class="c-origin">Lyon</span>
+        <h4>Claire Laurent</h4>
+        <p>Minimalist Cashmere & Coats</p>
+      </div>
+      <div class="couturier-pill-card">
+        <span class="c-origin">Tokyo</span>
+        <h4>Kenji Takahashi</h4>
+        <p>Avant-Garde Technical Gabardine</p>
+      </div>
+    </div>
+
+    <div class="section-action-center" style="margin-top: 30px;">
+      <a href="/designers" class="meridian-btn btn-outline">Meet The Resident Couturiers</a>
+    </div>
+  </section>
+
+  <!-- 5. MAISON PHILOSOPHY QUOTE BANNER -->
+  <section class="meridian-quote-banner">
+    <div class="quote-content">
+      <blockquote class="meridian-quote">
+        "Fashion is not merely what one wears; it is the meridian line where personal identity and architectural grace converge."
+      </blockquote>
+      <cite class="quote-author">— The Meridian Atelier</cite>
+    </div>
+  </section>
+
+</main>
+
+<%- include('../partials/footer') %>

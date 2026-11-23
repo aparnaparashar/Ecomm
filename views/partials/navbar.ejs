@@ -1,0 +1,159 @@
+<!-- Flash Alerts (Experiment 4 & 7) -->
+<% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+  <div class="meridian-alert alert-success">
+    <div class="alert-inner">
+      <i class="fas fa-check-circle"></i>
+      <span><%= success %></span>
+    </div>
+    <button class="alert-dismiss" onclick="this.closest('.meridian-alert').remove()">&times;</button>
+  </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+  <div class="meridian-alert alert-error">
+    <div class="alert-inner">
+      <i class="fas fa-exclamation-circle"></i>
+      <span><%= error %></span>
+    </div>
+    <button class="alert-dismiss" onclick="this.closest('.meridian-alert').remove()">&times;</button>
+  </div>
+<% } %>
+
+<!-- Main Navigation (Experiment 2) -->
+<header class="meridian-nav-wrapper">
+  <nav class="meridian-nav">
+    <div class="nav-container">
+      
+      <!-- Brand Logo with Meridian Icon -->
+      <a href="/" class="meridian-brand">
+        <span class="brand-monogram">
+          <svg viewBox="0 0 40 40" class="brand-diamond-svg">
+            <polygon points="20,2 38,20 20,38 2,20" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="20" cy="20" r="3" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-name">MERIDIAN</span>
+      </a>
+
+      <!-- Search Engine Bar (Experiment 2 & 9) -->
+      <div class="nav-search-bar">
+        <form action="/products/search" method="GET" class="search-form">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            name="search" 
+            placeholder="" 
+            class="meridian-search-input"
+            value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>"
+            autocomplete="off"
+          >
+          <button type="submit" class="search-submit">Search</button>
+        </form>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="nav-links-desktop">
+        <!-- Category Dropdown (Experiment 2 & 3) -->
+        <div class="nav-dropdown">
+          <a href="/products" class="nav-link dropdown-toggle">Collections</a>
+          <div class="dropdown-pane">
+            <a href="/products" class="dropdown-item">All Apparel</a>
+            <% if (typeof categories !== 'undefined' && categories) { %>
+              <% categories.forEach(cat => { %>
+                <a href="/products/category/<%= cat.slug %>" class="dropdown-item">
+                  <%= cat.title %>
+                </a>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+
+        <a href="/about" class="nav-link">Maison</a>
+        <a href="/designers" class="nav-link">Couturiers</a>
+        <a href="/contact" class="nav-link">Concierge</a>
+      </div>
+
+      <!-- User Actions & Cart -->
+      <div class="nav-actions">
+        <!-- Dark / Light Theme Toggle -->
+        <button type="button" class="nav-action-icon theme-btn" id="themeToggleBtn" title="Switch Light / Dark Theme" aria-label="Toggle Dark and Light Mode">
+          <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- Shopping Cart (Experiment 10) -->
+        <a href="/cart/shopping-cart" class="nav-action-icon cart-trigger" title="Shopping Bag">
+          <i class="fas fa-shopping-bag"></i>
+          <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+            <span class="cart-pill"><%= cartCount %></span>
+          <% } %>
+        </a>
+
+        <!-- Account / Access Control (Experiment 6) -->
+        <% if (typeof login !== 'undefined' && login) { %>
+          <div class="nav-dropdown user-dropdown">
+            <a href="/user/profile" class="nav-action-icon" title="Account">
+              <i class="fas fa-user-circle"></i>
+            </a>
+            <div class="dropdown-pane dropdown-right">
+              <div class="dropdown-header">
+                <strong><%= currentUser.username %></strong>
+                <small><%= currentUser.email %></small>
+              </div>
+              <hr class="dropdown-sep">
+              <a href="/user/profile" class="dropdown-item"><i class="fas fa-history"></i> My Orders</a>
+              <% if (currentUser.isAdmin) { %>
+                <a href="/admin" class="dropdown-item admin-link"><i class="fas fa-compass"></i> Atelier Console</a>
+              <% } %>
+              <hr class="dropdown-sep">
+              <a href="/user/logout" class="dropdown-item logout-link"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+            </div>
+          </div>
+        <% } else { %>
+          <a href="/user/signin" class="nav-action-icon" title="Sign In">
+            <i class="far fa-user"></i>
+          </a>
+        <% } %>
+
+        <!-- Mobile Menu Hamburger -->
+        <button class="nav-mobile-btn" id="navMobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="nav-mobile-drawer" id="navMobileDrawer">
+      <div class="mobile-search">
+        <form action="/products/search" method="GET">
+          <input type="text" name="search" placeholder="" class="form-control">
+        </form>
+      </div>
+      <div class="mobile-links">
+        <a href="/products" class="mobile-nav-link">All Collections</a>
+        <div class="mobile-cat-group">
+          <span class="mobile-label">Collections</span>
+          <% if (typeof categories !== 'undefined' && categories) { %>
+            <% categories.forEach(cat => { %>
+              <a href="/products/category/<%= cat.slug %>" class="mobile-sublink"><%= cat.title %></a>
+            <% }) %>
+          <% } %>
+        </div>
+        <a href="/about" class="mobile-nav-link">About Maison</a>
+        <a href="/designers" class="mobile-nav-link">Resident Couturiers</a>
+        <a href="/contact" class="mobile-nav-link">Concierge</a>
+        <hr class="dropdown-sep">
+        <% if (typeof login !== 'undefined' && login) { %>
+          <a href="/user/profile" class="mobile-nav-link">My Portfolio</a>
+          <% if (currentUser.isAdmin) { %>
+            <a href="/admin" class="mobile-nav-link admin-link">Atelier Console</a>
+          <% } %>
+          <a href="/user/logout" class="mobile-nav-link">Sign Out</a>
+        <% } else { %>
+          <a href="/user/signin" class="mobile-nav-link">Sign In</a>
+          <a href="/user/signup" class="mobile-nav-link">Join The House</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+</header>

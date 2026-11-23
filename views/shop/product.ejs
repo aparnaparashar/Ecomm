@@ -1,0 +1,158 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  <div class="product-detail-wrapper">
+    <div class="detail-container">
+      
+      <!-- Product Imagery Column -->
+      <div class="detail-media-col">
+        <div class="detail-image-frame">
+          <img src="<%= product.imagePath %>" alt="<%= product.title %>" class="detail-main-image">
+          <% if (product.featured) { %>
+            <span class="featured-badge">Featured Creation</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Product Information Column (Experiment 3 & 5 Attributes) -->
+      <div class="detail-info-col">
+        
+        <div class="detail-header-group">
+          <div class="detail-cat-row">
+            <span class="cat-pill">
+              <%= product.category ? product.category.title : 'Apparel' %>
+            </span>
+            <span class="code-pill">Ref: <%= product.productCode %></span>
+          </div>
+          
+          <h1 class="detail-piece-title"><%= product.title %></h1>
+          
+          <!-- Designer Attribution (Novelty Feature) -->
+          <div class="designer-badge-strip">
+            <span class="designer-pill">
+              <i class="fas fa-feather-alt gold-text"></i> Designed by <strong><%= product.designer || 'Alessandro Rossi' %></strong>
+            </span>
+            <span class="origin-pill">
+              <i class="fas fa-map-marker-alt"></i> <%= product.designerOrigin || 'Milan, Italy' %>
+            </span>
+            <% if (product.fabric) { %>
+              <span class="fabric-pill">
+                <i class="fas fa-scroll"></i> <%= product.fabric %>
+              </span>
+            <% } %>
+          </div>
+
+          <p class="detail-manufacturer">Maison / Atelier: <strong><%= product.manufacturer %></strong></p>
+          
+          <div class="detail-price-row">
+            <span class="detail-price">₹<%= product.price.toLocaleString('en-IN') %></span>
+            
+            <!-- State of Order (Experiment 3 & 5) -->
+            <% if (product.available) { %>
+              <span class="status-indicator in-stock">
+                <i class="fas fa-circle"></i> IN STOCK (Available for Immediate Dispatch)
+              </span>
+            <% } else { %>
+              <span class="status-indicator out-stock">
+                <i class="fas fa-circle"></i> OUT OF STOCK (Crafting Next Batch)
+              </span>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="gold-accent-line"></div>
+
+        <!-- Description & Fabric Specifications -->
+        <div class="detail-description-block">
+          <h3>Garment Narrative</h3>
+          <p><%= product.description %></p>
+        </div>
+
+        <!-- Garment Specifications Table -->
+        <div class="detail-specs-table">
+          <div class="spec-row">
+            <span class="spec-label">Artisan Code:</span>
+            <span class="spec-val"><%= product.productCode %></span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Sartorial Category:</span>
+            <span class="spec-val"><%= product.category ? product.category.title : 'Apparel' %></span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Creation Date:</span>
+            <span class="spec-val"><%= new Date(product.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+          </div>
+        </div>
+
+        <!-- Add to Shopping Bag Action (Experiment 10) -->
+        <div class="detail-cta-block">
+          <form action="/cart/add-to-cart/<%= product._id %>" method="POST" class="detail-add-form">
+            <button type="submit" class="meridian-btn btn-primary btn-block btn-lg" <%= !product.available ? 'disabled' : '' %>>
+              <i class="fas fa-shopping-bag"></i> Add to Shopping Bag
+            </button>
+          </form>
+          
+          <a href="/cart/shopping-cart" class="meridian-btn btn-outline btn-block">
+            View Shopping Bag
+          </a>
+        </div>
+
+        <!-- Service Assurance -->
+        <div class="detail-service-promises">
+          <div class="promise-item">
+            <i class="fas fa-shipping-fast"></i>
+            <div>
+              <strong>Complimentary Global Delivery</strong>
+              <small>Insured transit on every bespoke order</small>
+            </div>
+          </div>
+          <div class="promise-item">
+            <i class="fas fa-undo-alt"></i>
+            <div>
+              <strong>30-Day Atelier Return Privilege</strong>
+              <small>Hassle-free complimentary size exchange</small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Related Creations -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+      <section class="related-products-section">
+        <div class="section-heading-block">
+          <span class="section-sub">Harmonizing Ensembles</span>
+          <h2 class="section-title">You May Also Admire</h2>
+          <div class="gold-accent-line"></div>
+        </div>
+
+        <div class="products-grid">
+          <% relatedProducts.forEach(rel => { %>
+            <div class="meridian-product-card">
+              <div class="card-media-wrapper">
+                <a href="/products/<%= rel._id %>">
+                  <img src="<%= rel.imagePath %>" alt="<%= rel.title %>" class="product-thumb">
+                </a>
+              </div>
+              <div class="card-body">
+                <span class="product-cat-name"><%= rel.category ? rel.category.title : 'Apparel' %></span>
+                <h3 class="card-title">
+                  <a href="/products/<%= rel._id %>"><%= rel.title %></a>
+                </h3>
+                <div class="card-foot">
+                  <span class="price-tag">₹<%= rel.price.toLocaleString('en-IN') %></span>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

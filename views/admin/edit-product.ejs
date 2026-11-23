@@ -1,0 +1,93 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Atelier Curator</span>
+      <h1 class="header-main-title">Modify: <%= product.title %></h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-form-section">
+    <div class="form-wrapper-narrow">
+      <form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data" class="meridian-form admin-product-form">
+        
+        <div class="form-group">
+          <label for="title">Piece Title *</label>
+          <input type="text" id="title" name="title" class="form-control" required value="<%= product.title %>">
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="productCode">Product Code *</label>
+            <input type="text" id="productCode" name="productCode" class="form-control" required value="<%= product.productCode %>">
+          </div>
+          <div class="form-group">
+            <label for="price">Price (₹ INR) *</label>
+            <input type="number" id="price" name="price" class="form-control" required min="0" value="<%= product.price %>">
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" name="category" class="form-control" required>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat._id %>" <%= product.category && product.category.toString() === cat._id.toString() ? 'selected' : '' %>>
+                  <%= cat.title %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="manufacturer">Atelier / Brand</label>
+            <input type="text" id="manufacturer" name="manufacturer" class="form-control" value="<%= product.manufacturer %>">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" name="description" class="form-control" rows="5" required><%= product.description %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Current Media</label>
+          <div class="current-image-preview">
+            <img src="<%= product.imagePath %>" alt="" style="max-height: 120px; border-radius: 4px; border: 1px solid #333;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="image">Replace Media (Upload)</label>
+          <input type="file" id="image" name="image" class="form-control-file" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl">Or New Image URL</label>
+          <input type="url" id="imageUrl" name="imageUrl" class="form-control" value="<%= product.imagePath.startsWith('http') ? product.imagePath : '' %>">
+        </div>
+
+        <div class="form-checkbox-row">
+          <label class="custom-checkbox">
+            <input type="checkbox" name="available" <%= product.available ? 'checked' : '' %>>
+            <span>In Stock / Available</span>
+          </label>
+          <label class="custom-checkbox">
+            <input type="checkbox" name="featured" <%= product.featured ? 'checked' : '' %>>
+            <span>Featured Creation</span>
+          </label>
+        </div>
+
+        <div class="form-actions-row">
+          <button type="submit" class="meridian-btn btn-primary btn-lg">Save Modifications</button>
+          <a href="/admin" class="meridian-btn btn-outline">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
