@@ -120,6 +120,112 @@
 
     </div>
 
+    <!-- Reviews & Ratings -->
+    <%
+      const _reviews = (typeof reviews !== 'undefined' && reviews) ? reviews : [];
+      const _ratingCount = product.ratingCount || _reviews.length || 0;
+      const _ratingAvg = product.ratingAverage ? Number(product.ratingAverage) : (_ratingCount ? (_reviews.reduce((s, r) => s + (r.rating || 0), 0) / _ratingCount) : 0);
+      const _avgRounded = Math.round(_ratingAvg * 10) / 10;
+      const _avgStars = Math.round(_ratingAvg);
+      const _userHasReviewed = (typeof userHasReviewed !== 'undefined') ? userHasReviewed : false;
+    %>
+    <section class="product-reviews-section" id="reviews">
+      <div class="section-heading-block">
+        <span class="section-sub">Client Voices</span>
+        <h2 class="section-title">Reviews & Ratings</h2>
+        <div class="gold-accent-line"></div>
+      </div>
+
+      <div class="reviews-layout">
+        <div class="reviews-summary-card">
+          <div class="reviews-score"><%= _ratingCount ? _avgRounded.toFixed(1) : '—' %></div>
+          <div class="reviews-stars" aria-label="Average rating <%= _avgRounded %> out of 5">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <i class="<%= i <= _avgStars ? 'fas' : 'far' %> fa-star"></i>
+            <% } %>
+          </div>
+          <p class="reviews-count"><%= _ratingCount %> <%= _ratingCount === 1 ? 'review' : 'reviews' %></p>
+          <p class="reviews-note">Share your experience to help others choose with confidence.</p>
+        </div>
+
+        <div class="reviews-main-col">
+          <div class="review-analyzer-card" id="reviewAnalyzer" data-product-id="<%= product._id %>" data-review-count="<%= _ratingCount %>">
+            <div class="review-analyzer-head">
+              <div>
+                <span class="review-label">AI Insight</span>
+                <h3>AI Review Summary</h3>
+                <p class="review-analyzer-sub">Get a quick summary of customer feedback, key highlights, and common concerns.</p>
+              </div>
+              <button type="button" class="meridian-btn btn-outline" id="analyzeReviewsBtn">
+                <i class="fas fa-magic"></i> Analyze Reviews
+              </button>
+            </div>
+            <div id="reviewAnalysisStatus" class="review-analyzer-status"></div>
+            <div id="reviewAnalysisResult" class="review-analyzer-result hidden" aria-live="polite"></div>
+          </div>
+
+          <% if (login) { %>
+            <% if (!_userHasReviewed) { %>
+              <div class="review-form-card">
+                <h3>Write a Review</h3>
+                <form action="/products/<%= product._id %>/reviews" method="POST" class="review-form">
+                  <div class="review-rating-input">
+                    <span class="review-label">Your rating</span>
+                    <div class="star-rating-picker">
+                      <% for (let i = 5; i >= 1; i--) { %>
+                        <input type="radio" id="rate-<%= i %>" name="rating" value="<%= i %>" <%= i === 5 ? 'required' : '' %>>
+                        <label for="rate-<%= i %>" title="<%= i %> star<%= i > 1 ? 's' : '' %>"><i class="fas fa-star"></i></label>
+                      <% } %>
+                    </div>
+                  </div>
+                  <div class="review-field">
+                    <label for="review-comment" class="review-label">Your review</label>
+                    <textarea id="review-comment" name="comment" rows="4" maxlength="1000" placeholder="Tell us about the fit, fabric, quality, or how you styled it..." required></textarea>
+                  </div>
+                  <button type="submit" class="meridian-btn btn-primary">Submit Review</button>
+                </form>
+              </div>
+            <% } else { %>
+              <div class="review-form-card review-form-info">
+                <h3>Thank you</h3>
+                <p>You have already shared a review for this piece.</p>
+              </div>
+            <% } %>
+          <% } else { %>
+            <div class="review-form-card review-form-info">
+              <h3>Share your thoughts</h3>
+              <p><a href="/user/signin">Sign in</a> to add a rating and review for this product.</p>
+            </div>
+          <% } %>
+
+          <div class="reviews-list">
+            <% if (_reviews && _reviews.length > 0) { %>
+              <% _reviews.forEach(review => { %>
+                <article class="review-card">
+                  <div class="review-card-head">
+                    <div>
+                      <strong class="review-author"><%= review.username || 'Customer' %></strong>
+                      <div class="review-stars-row" aria-label="<%= review.rating %> out of 5 stars">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                          <i class="<%= i <= review.rating ? 'fas' : 'far' %> fa-star"></i>
+                        <% } %>
+                      </div>
+                    </div>
+                    <span class="review-date"><%= new Date(review.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %></span>
+                  </div>
+                  <p class="review-comment"><%= review.comment %></p>
+                </article>
+              <% }) %>
+            <% } else { %>
+              <div class="review-empty">
+                <p>No reviews yet. Be the first to review this piece.</p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Related Creations -->
     <% if (relatedProducts && relatedProducts.length > 0) { %>
       <section class="related-products-section">
@@ -154,5 +260,79 @@
 
   </div>
 </main>
+
+<script>
+  (function () {
+    const card = document.getElementById('reviewAnalyzer');
+    const btn = document.getElementById('analyzeReviewsBtn');
+    const statusEl = document.getElementById('reviewAnalysisStatus');
+    const resultEl = document.getElementById('reviewAnalysisResult');
+    if (!card || !btn || !statusEl || !resultEl) return;
+
+    const productId = card.getAttribute('data-product-id');
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function renderSummary(summary) {
+      const sentiment = summary.overallSentiment || 'Summary';
+      const label = (summary.sentimentLabel || 'neutral').toLowerCase();
+      const highlights = Array.isArray(summary.highlights) ? summary.highlights : [];
+      const complaints = Array.isArray(summary.complaints) ? summary.complaints : [];
+      const takeaway = summary.takeaway || '';
+      const count = summary.reviewCount != null ? summary.reviewCount : (parseInt(card.getAttribute('data-review-count') || '0', 10) || 0);
+
+      const listBlock = (title, items, emptyText, icon) => {
+        if (!items.length) return `<div class="analysis-block"><h4>${icon} ${title}</h4><p class="analysis-empty">${esc(emptyText)}</p></div>`;
+        return `<div class="analysis-block"><h4>${icon} ${title}</h4><ul class="analysis-list">${items.map(it => {
+          const text = typeof it === 'string' ? it : (it.text || '');
+          const evidence = typeof it === 'object' && it && it.evidence ? it.evidence : '';
+          return `<li><strong>${esc(text)}</strong>${evidence ? `<span class="analysis-evidence">${esc(evidence)}</span>` : ''}</li>`;
+        }).join('')}</ul></div>`;
+      };
+
+      resultEl.innerHTML = `
+        <div class="analysis-top">
+          <span class="analysis-sentiment sentiment-${esc(label)}">${esc(sentiment)}</span>
+          <span class="analysis-meta">Based on ${esc(count)} ${count === 1 ? 'review' : 'reviews'}</span>
+        </div>
+        <div class="analysis-grid">
+          ${listBlock('What customers liked', highlights, 'No specific highlights identified yet.', '<i class="fas fa-thumbs-up"></i>')}
+          ${listBlock('Common concerns', complaints, 'No common complaints identified.', '<i class="fas fa-exclamation-circle"></i>')}
+        </div>
+        ${takeaway ? `<div class="analysis-takeaway"><h4><i class="fas fa-lightbulb"></i> Overall takeaway</h4><p>${esc(takeaway)}</p></div>` : ''}
+      `;
+      resultEl.classList.remove('hidden');
+    }
+
+    btn.addEventListener('click', async function () {
+      btn.disabled = true;
+      statusEl.textContent = 'Analyzing customer reviews...';
+      statusEl.className = 'review-analyzer-status loading';
+      resultEl.classList.add('hidden');
+      resultEl.innerHTML = '';
+      try {
+        const res = await fetch(`/products/${productId}/reviews/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || 'Unable to analyze reviews right now.');
+        }
+        statusEl.textContent = '';
+        statusEl.className = 'review-analyzer-status';
+        renderSummary(data.summary || {});
+      } catch (err) {
+        statusEl.textContent = err.message || 'Unable to analyze reviews right now.';
+        statusEl.className = 'review-analyzer-status error';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  })();
+</script>
 
 <%- include('../partials/footer') %>
