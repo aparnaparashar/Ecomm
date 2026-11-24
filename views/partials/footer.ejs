@@ -78,6 +78,148 @@
   </div>
 </footer>
 
+<!-- AI Shopping Assistant -->
+<div class="assistant-widget" id="assistantWidget">
+  <button type="button" class="assistant-fab" id="assistantFab" aria-label="Open shopping assistant">
+    <i class="fas fa-comments"></i>
+    <span>Ask Meridian</span>
+  </button>
+
+  <div class="assistant-panel hidden" id="assistantPanel" aria-hidden="true">
+    <div class="assistant-header">
+      <div>
+        <span class="assistant-kicker">Shopping Assistant</span>
+        <h3>Meridian Concierge</h3>
+      </div>
+      <button type="button" class="assistant-close" id="assistantClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="assistant-messages" id="assistantMessages">
+      <div class="assistant-msg assistant-msg-bot">
+        Hi! I can help you find the right piece. Tell me what you need — for example, “I need a gift for my friend under ₹1000” or “show me something formal for work.”
+      </div>
+    </div>
+    <div class="assistant-suggestions" id="assistantSuggestions">
+      <button type="button" class="assistant-chip" data-msg="I need a gift for my friend under ₹1000">Gift under ₹1000</button>
+      <button type="button" class="assistant-chip" data-msg="Suggest an outfit for a formal office meeting">Formal office look</button>
+      <button type="button" class="assistant-chip" data-msg="Show me something stylish for a special occasion">Occasion wear</button>
+    </div>
+    <form class="assistant-input-row" id="assistantForm">
+      <input type="text" id="assistantInput" placeholder="Describe what you're looking for..." autocomplete="off">
+      <button type="submit" class="assistant-send" id="assistantSend" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function() {
+  const widget = document.getElementById('assistantWidget');
+  const fab = document.getElementById('assistantFab');
+  const panel = document.getElementById('assistantPanel');
+  const closeBtn = document.getElementById('assistantClose');
+  const form = document.getElementById('assistantForm');
+  const input = document.getElementById('assistantInput');
+  const messages = document.getElementById('assistantMessages');
+  const suggestions = document.getElementById('assistantSuggestions');
+  if (!widget || !fab || !panel || !form || !input || !messages) return;
+
+  const history = [];
+  let busy = false;
+
+  function openPanel() {
+    panel.classList.remove('hidden');
+    panel.setAttribute('aria-hidden', 'false');
+    input.focus();
+  }
+  function closePanel() {
+    panel.classList.add('hidden');
+    panel.setAttribute('aria-hidden', 'true');
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatReply(text) {
+    const escaped = escapeHtml(text).replace(/\n/g, '<br>');
+    return escaped.replace(/(\/products\/[a-zA-Z0-9]+)/g, '<a href="$1">$1</a>');
+  }
+
+  function appendMessage(role, html, isHtml) {
+    const div = document.createElement('div');
+    div.className = 'assistant-msg ' + (role === 'user' ? 'assistant-msg-user' : 'assistant-msg-bot');
+    if (isHtml) div.innerHTML = html; else div.textContent = html;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  function renderProducts(products) {
+    if (!products || !products.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'assistant-products';
+    products.slice(0, 4).forEach(function(p) {
+      const card = document.createElement('a');
+      card.className = 'assistant-product-card';
+      card.href = p.url || ('/products/' + p.id);
+      const img = p.imagePath ? '<img src="' + escapeHtml(p.imagePath) + '" alt="' + escapeHtml(p.title) + '">' : '';
+      card.innerHTML = img + '<div class="assistant-product-info"><strong>' + escapeHtml(p.title) + '</strong><span>₹' + Number(p.price || 0).toLocaleString('en-IN') + '</span></div>';
+      wrap.appendChild(card);
+    });
+    messages.appendChild(wrap);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function sendMessage(text) {
+    const msg = (text || '').trim();
+    if (!msg || busy) return;
+    if (suggestions) suggestions.style.display = 'none';
+    appendMessage('user', msg, false);
+    history.push({ role: 'user', content: msg });
+    input.value = '';
+    busy = true;
+
+    const typing = appendMessage('bot', 'Finding the best options for you...', false);
+    typing.classList.add('assistant-typing');
+
+    try {
+      const res = await fetch('/assistant/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, history: history.slice(-8) })
+      });
+      const data = await res.json().catch(function(){ return {}; });
+      typing.remove();
+      if (!res.ok) {
+        appendMessage('bot', data.error || 'Sorry, I could not get recommendations right now.', false);
+      } else {
+        const reply = data.reply || 'Here are some options I found for you.';
+        appendMessage('bot', formatReply(reply), true);
+        history.push({ role: 'assistant', content: reply });
+        renderProducts(data.products || []);
+      }
+    } catch (e) {
+      typing.remove();
+      appendMessage('bot', 'Sorry, I could not connect right now. Please try again.', false);
+    } finally {
+      busy = false;
+      messages.scrollTop = messages.scrollHeight;
+    }
+  }
+
+  fab.addEventListener('click', function() {
+    if (panel.classList.contains('hidden')) openPanel(); else closePanel();
+  });
+  closeBtn.addEventListener('click', closePanel);
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    sendMessage(input.value);
+  });
+  widget.querySelectorAll('.assistant-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() { sendMessage(chip.getAttribute('data-msg') || ''); });
+  });
+})();
+</script>
+
 <script src="/js/main.js"></script>
 </body>
 </html>
