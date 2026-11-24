@@ -51,6 +51,15 @@ router.get("/designers", (req, res) => {
   });
 });
 
+// POST: Bespoke Dressmaking & Commission Consultation Inquiry
+router.post("/designers/commission", (req, res) => {
+  const { clientName, clientEmail, designerName, silhouette, notes } = req.body;
+  const name = clientName ? clientName.trim() : "Valued Client";
+  const designer = designerName || "the Resident Couturier";
+  req.flash("success", `Thank you, ${name}. Your bespoke commission inquiry for ${designer} has been registered. Our private atelier concierge will contact you at ${clientEmail} to schedule your initial sketch & measurement consultation.`);
+  res.redirect("/designers");
+});
+
 // GET: Contact Us
 router.get("/contact", (req, res) => {
   res.render("pages/contact", {

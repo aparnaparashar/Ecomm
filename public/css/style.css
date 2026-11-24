@@ -3409,3 +3409,45 @@ button, input, select, textarea {
   font-size: 0.78rem;
   color: var(--text-muted);
 }
+
+/* Couturier Commission & Bespoke Dressmaking Styles */
+.designer-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.commission-section {
+  padding: 60px 0 100px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
+}
+
+.commission-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.commission-form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-border);
+  padding: 44px 38px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  margin-top: 36px;
+}
+
+.commission-submit-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.concierge-reassurance {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}

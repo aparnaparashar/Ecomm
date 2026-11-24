@@ -6,3 +6,11 @@ public/uploads/*
 data/
 extract_pdf_info.py
 take_all_screenshots.py
+build_lab_docx.py
+extract_all_experiments.py
+Aparna_Parashar_03201012023_Ecommerce_Lab_File.docx
+inspect_exps.py
+test_docx.py
+
+public/screenshots
+extracted_experiments.json

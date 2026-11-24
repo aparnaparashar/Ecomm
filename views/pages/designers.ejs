@@ -7,7 +7,7 @@
       <span class="header-pre">The Guild of Artisans</span>
       <h1 class="header-main-title">Resident Master Couturiers</h1>
       <p class="header-desc">
-        Every Meridian piece is envisioned, draped, and perfected by internationally acclaimed designers from Milan, Paris, New Delhi, Lyon, and Tokyo.
+        Every Meridian piece is envisioned, draped, and perfected by internationally acclaimed designers from Milan, Paris, New Delhi, Lyon, and Tokyo. Available for prêt-à-porter collections and private bespoke commissions.
       </p>
       <div class="gold-accent-line"></div>
     </div>
@@ -32,7 +32,10 @@
             <strong>Signature Medium:</strong> Loro Piana 130s Virgin Wool & Italian Cashmere
           </div>
           <div class="designer-cta">
-            <a href="/products/search?search=Rossi" class="meridian-btn btn-outline btn-sm">Explore Alessandro's Pieces</a>
+            <a href="/products/search?search=Rossi" class="meridian-btn btn-outline btn-sm">Explore Pieces</a>
+            <button type="button" class="meridian-btn btn-primary btn-sm commission-btn" onclick="openCommissionModal('Alessandro Rossi', 'Bespoke Tailored Suit')">
+              <i class="fas fa-feather-alt"></i> Commission Bespoke Suit
+            </button>
           </div>
         </div>
       </article>
@@ -53,7 +56,10 @@
             <strong>Signature Medium:</strong> Mulberry Silk Chiffon, Duchesse Satin & Organza
           </div>
           <div class="designer-cta">
-            <a href="/products/search?search=Rostova" class="meridian-btn btn-outline btn-sm">Explore Elena's Pieces</a>
+            <a href="/products/search?search=Rostova" class="meridian-btn btn-outline btn-sm">Explore Pieces</a>
+            <button type="button" class="meridian-btn btn-primary btn-sm commission-btn" onclick="openCommissionModal('Elena Rostova', 'Haute Evening Gown')">
+              <i class="fas fa-feather-alt"></i> Commission Evening Gown
+            </button>
           </div>
         </div>
       </article>
@@ -74,7 +80,10 @@
             <strong>Signature Medium:</strong> Kashi Kadwa Brocade & Hand-Spun Royal Silk Velvet
           </div>
           <div class="designer-cta">
-            <a href="/products/search?search=Mehra" class="meridian-btn btn-outline btn-sm">Explore Aarav's Pieces</a>
+            <a href="/products/search?search=Mehra" class="meridian-btn btn-outline btn-sm">Explore Pieces</a>
+            <button type="button" class="meridian-btn btn-primary btn-sm commission-btn" onclick="openCommissionModal('Aarav Mehra', 'Imperial Brocade Cape / Bridal')">
+              <i class="fas fa-feather-alt"></i> Commission Heritage Brocade
+            </button>
           </div>
         </div>
       </article>
@@ -95,7 +104,10 @@
             <strong>Signature Medium:</strong> Double-Faced Baby Alpaca & Mongolian Cashmere
           </div>
           <div class="designer-cta">
-            <a href="/products/search?search=Laurent" class="meridian-btn btn-outline btn-sm">Explore Claire's Pieces</a>
+            <a href="/products/search?search=Laurent" class="meridian-btn btn-outline btn-sm">Explore Pieces</a>
+            <button type="button" class="meridian-btn btn-primary btn-sm commission-btn" onclick="openCommissionModal('Claire Laurent', 'Cashmere Cocoon Coat')">
+              <i class="fas fa-feather-alt"></i> Commission Cashmere Piece
+            </button>
           </div>
         </div>
       </article>
@@ -116,13 +128,117 @@
             <strong>Signature Medium:</strong> Bonded Japanese Gabardine & Obsidian Coated Cotton
           </div>
           <div class="designer-cta">
-            <a href="/products/search?search=Takahashi" class="meridian-btn btn-outline btn-sm">Explore Kenji's Pieces</a>
+            <a href="/products/search?search=Takahashi" class="meridian-btn btn-outline btn-sm">Explore Pieces</a>
+            <button type="button" class="meridian-btn btn-primary btn-sm commission-btn" onclick="openCommissionModal('Kenji Takahashi', 'Avant-Garde Technical Outerwear')">
+              <i class="fas fa-feather-alt"></i> Commission Technical Coat
+            </button>
           </div>
         </div>
       </article>
 
     </div>
   </section>
+
+  <!-- Dedicated Bespoke Dressmaking Commission Section -->
+  <section class="meridian-section commission-section" id="commissionSection">
+    <div class="commission-container">
+      <div class="section-heading-block">
+        <span class="section-sub">Personalized Haute Couture</span>
+        <h2 class="section-title">Commission a Bespoke Creation</h2>
+        <div class="gold-accent-line"></div>
+        <p class="section-intro">
+          Dreaming of a one-of-a-kind wedding gown, red-carpet evening dress, or custom tailored silhouette? 
+          Collaborate directly with our resident couturiers for private design, made-to-measure fittings, and heirloom craftsmanship.
+        </p>
+      </div>
+
+      <div class="commission-form-card">
+        <form action="/designers/commission" method="POST" class="meridian-form commission-form">
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="clientName">Your Full Name *</label>
+              <input type="text" id="clientName" name="clientName" class="form-control" required placeholder="e.g. Aparna Parashar" value="<%= currentUser ? currentUser.username : '' %>">
+            </div>
+            <div class="form-group">
+              <label for="clientEmail">Client Email Address *</label>
+              <input type="email" id="clientEmail" name="clientEmail" class="form-control" required placeholder="client@meridian.style" value="<%= currentUser ? currentUser.email : '' %>">
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="designerSelect">Preferred Resident Couturier *</label>
+              <select id="designerSelect" name="designerName" class="form-control" required>
+                <option value="Elena Rostova">Elena Rostova (Paris — Evening Silk Gowns & Gala Drapery)</option>
+                <option value="Alessandro Rossi">Alessandro Rossi (Milan — Savile Row & Power Tailoring)</option>
+                <option value="Aarav Mehra">Aarav Mehra (New Delhi — Heritage Zardozi & Royal Brocades)</option>
+                <option value="Claire Laurent">Claire Laurent (Lyon — Minimalist Double-Faced Cashmere)</option>
+                <option value="Kenji Takahashi">Kenji Takahashi (Tokyo — Avant-Garde Technical Gabardine)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="silhouetteSelect">Desired Silhouette / Garment Type *</label>
+              <select id="silhouetteSelect" name="silhouette" class="form-control" required>
+                <option value="Haute Evening Gown">Haute Evening Gown / Red Carpet Drapery</option>
+                <option value="Bespoke Tailored Suit">Bespoke Two-Piece Tailored Suit</option>
+                <option value="Bridal Couture">Bridal / Wedding Heirloom Gown</option>
+                <option value="Imperial Brocade Cape">Imperial Silk Brocade Cape / Sherwani</option>
+                <option value="Cashmere Outerwear">Custom Double-Faced Cashmere Overcoat</option>
+                <option value="Avant-Garde Silhouette">Conceptual / Avant-Garde Runway Piece</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="commissionNotes">Design Vision, Measurement Notes & Fabric Desires</label>
+            <textarea id="commissionNotes" name="notes" class="form-control" rows="4" placeholder="Describe the occasion, silhouette preferences, target event date, color palette, or specific fabrics you envision..."></textarea>
+          </div>
+
+          <div class="commission-submit-wrap">
+            <button type="submit" class="meridian-btn btn-primary btn-lg">
+              <i class="fas fa-feather-alt"></i> Request Private Design Consultation
+            </button>
+            <span class="concierge-reassurance">
+              <i class="fas fa-shield-alt gold-text"></i> White-glove discretion guaranteed. Our senior atelier concierge contacts you within 24 hours.
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
 </main>
+
+<script>
+  function openCommissionModal(designerName, silhouette) {
+    const designerSelect = document.getElementById('designerSelect');
+    const silhouetteSelect = document.getElementById('silhouetteSelect');
+    const section = document.getElementById('commissionSection');
+
+    if (designerSelect) {
+      for (let i = 0; i < designerSelect.options.length; i++) {
+        if (designerSelect.options[i].value.includes(designerName)) {
+          designerSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (silhouetteSelect && silhouette) {
+      for (let i = 0; i < silhouetteSelect.options.length; i++) {
+        if (silhouetteSelect.options[i].value.includes(silhouette)) {
+          silhouetteSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      const firstInput = document.getElementById('clientName');
+      if (firstInput) firstInput.focus();
+    }
+  }
+</script>
 
 <%- include('../partials/footer') %>
