@@ -86,13 +86,9 @@
                 <span class="rzp-mode-tag"><i class="fas fa-lock"></i> 256-Bit Encrypted</span>
               </div>
               <p class="rzp-desc">
-                Official Razorpay checkout with Cards, UPI, NetBanking, and Digital Wallets.
+                Secure checkout powered by Razorpay — Cards, UPI, NetBanking, and Digital Wallets accepted.
               </p>
             </div>
-
-            <p class="demo-tag">
-              <i class="fas fa-shield-alt gold-text"></i> Complete your order securely using Razorpay (UPI, Credit/Debit Cards, NetBanking).
-            </p>
           </div>
 
           <!-- Razorpay Trigger Button -->
@@ -126,6 +122,13 @@
             <span>Pieces</span>
             <span><%= totalQty %> items</span>
           </div>
+
+          <% if (typeof cart !== 'undefined' && cart && cart.discountCode) { %>
+            <div class="summary-line discount-applied-line">
+              <span>Privilege (<%= cart.discountCode %>)</span>
+              <span class="discount-amount-text">- ₹<%= cart.discountAmount.toLocaleString('en-IN') %></span>
+            </div>
+          <% } %>
 
           <div class="summary-line">
             <span>Gateway</span>

@@ -1,0 +1,159 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page admin-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Client Care & Tailoring</span>
+      <h1 class="header-main-title">Concierge & Bespoke Ledger</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-section">
+    <div class="admin-wrapper">
+      <%- include('../partials/admin-nav') %>
+
+      <!-- Support Status Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <i class="fas fa-inbox metric-icon"></i>
+          <span class="metric-val"><%= stats.total %></span>
+          <span class="metric-label">Total Inquiries</span>
+          <small class="metric-sub"><%= stats.bespoke %> Bespoke Commissions</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-clock metric-icon"></i>
+          <span class="metric-val"><%= stats.pending %></span>
+          <span class="metric-label">Pending Review</span>
+          <small class="metric-sub">Requires first contact</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-spinner metric-icon"></i>
+          <span class="metric-val"><%= stats.inReview + stats.contacted %></span>
+          <span class="metric-label">Active / Contacted</span>
+          <small class="metric-sub">In consultation with atelier</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-check-double metric-icon"></i>
+          <span class="metric-val"><%= stats.resolved %></span>
+          <span class="metric-label">Resolved</span>
+          <small class="metric-sub">Fitting/Order fulfilled</small>
+        </div>
+      </div>
+
+      <!-- Tickets Stream -->
+      <div class="admin-panel-card">
+        <div class="panel-header-row">
+          <h3 class="panel-heading">
+            <i class="fas fa-headset gold-text"></i> Client Tickets & Couturier Commissions
+          </h3>
+          <span class="count-indicator"><%= tickets.length %> total records</span>
+        </div>
+
+        <% if (tickets && tickets.length > 0) { %>
+          <div class="tickets-admin-list">
+            <% tickets.forEach(t => { %>
+              <div class="ticket-admin-card <%= t.status === 'Resolved' ? 'ticket-resolved' : '' %>">
+                <div class="ticket-header-row">
+                  <div class="ticket-badges">
+                    <span class="ticket-number-badge"><%= t.ticketNumber %></span>
+                    <% if (t.type === 'bespoke_commission') { %>
+                      <span class="ticket-type-badge bespoke-badge">
+                        <i class="fas fa-cut"></i> Bespoke Commission
+                      </span>
+                    <% } else { %>
+                      <span class="ticket-type-badge support-badge">
+                        <i class="fas fa-question-circle"></i> General Ingestion
+                      </span>
+                    <% } %>
+
+                    <% if (t.priority.includes('VIP')) { %>
+                      <span class="ticket-priority-badge vip-badge">
+                        <i class="fas fa-crown"></i> VIP / Haute
+                      </span>
+                    <% } else { %>
+                      <span class="ticket-priority-badge standard-badge">Standard</span>
+                    <% } %>
+                  </div>
+
+                  <span class="ticket-timestamp">
+                    <i class="far fa-clock"></i> <%= new Date(t.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                  </span>
+                </div>
+
+                <div class="ticket-body-grid">
+                  <div class="ticket-client-meta">
+                    <h4><%= t.name %></h4>
+                    <p><a href="mailto:<%= t.email %>" class="gold-text"><i class="fas fa-envelope"></i> <%= t.email %></a></p>
+                    
+                    <% if (t.designerName) { %>
+                      <div class="bespoke-detail-box">
+                        <p><strong>Couturier:</strong> <%= t.designerName %></p>
+                        <% if (t.silhouette) { %>
+                          <p><strong>Silhouette:</strong> <%= t.silhouette %></p>
+                        <% } %>
+                      </div>
+                    <% } %>
+                  </div>
+
+                  <div class="ticket-inquiry-content">
+                    <h5 class="ticket-subject"><%= t.subject %></h5>
+                    <p class="ticket-message-text"><%= t.message %></p>
+                  </div>
+                </div>
+
+                <!-- Admin Action / Resolution Form -->
+                <form action="/admin/support/<%= t._id %>/update" method="POST" class="ticket-resolution-form">
+                  <div class="form-row-grid">
+                    <div class="form-group">
+                      <label>Lifecycle Status</label>
+                      <select name="status" class="form-control">
+                        <option value="Pending" <%= t.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                        <option value="In Review" <%= t.status === 'In Review' ? 'selected' : '' %>>In Review</option>
+                        <option value="Contacted" <%= t.status === 'Contacted' ? 'selected' : '' %>>Contacted</option>
+                        <option value="Resolved" <%= t.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Priority Tier</label>
+                      <select name="priority" class="form-control">
+                        <option value="Standard" <%= t.priority === 'Standard' ? 'selected' : '' %>>Standard</option>
+                        <option value="VIP / Haute" <%= t.priority.includes('VIP') ? 'selected' : '' %>>VIP / Haute</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group form-group-span2">
+                      <label>Atelier Curator Notes & Resolution Log</label>
+                      <input type="text" name="adminNotes" class="form-control" value="<%= t.adminNotes || '' %>" placeholder="e.g. Dispatched fabric swatches; confirmed measurements with client.">
+                    </div>
+                  </div>
+
+                  <div class="ticket-actions-bar">
+                    <button type="submit" class="meridian-btn btn-primary btn-sm">
+                      <i class="fas fa-save"></i> Save Resolution
+                    </button>
+                    
+                    <button type="submit" formaction="/admin/support/<%= t._id %>/delete" class="tbl-action-btn btn-delete" onclick="return confirm('Remove ticket <%= t.ticketNumber %>?')" title="Delete Record">
+                      <i class="fas fa-trash"></i> Delete
+                    </button>
+                  </div>
+                </form>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-check-circle empty-icon"></i>
+            <h3>No Inquiries</h3>
+            <p>All client communications and bespoke inquiries are resolved.</p>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

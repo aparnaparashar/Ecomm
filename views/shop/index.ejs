@@ -113,7 +113,15 @@
                     <a href="/products/<%= product._id %>"><%= product.title %></a>
                   </h3>
                   <div class="card-foot">
-                    <span class="price-tag">₹<%= product.price.toLocaleString('en-IN') %></span>
+                    <div class="card-price-wrap">
+                      <% if (product.discountPrice && product.discountPrice < product.price) { %>
+                        <span class="price-tag">₹<%= product.discountPrice.toLocaleString('en-IN') %></span>
+                        <span class="price-original">₹<%= product.price.toLocaleString('en-IN') %></span>
+                        <span class="discount-pill-tag">-<%= product.discountPercent %>%</span>
+                      <% } else { %>
+                        <span class="price-tag">₹<%= product.price.toLocaleString('en-IN') %></span>
+                      <% } %>
+                    </div>
                     <span class="brand-sub"><%= product.manufacturer %></span>
                   </div>
                 </div>

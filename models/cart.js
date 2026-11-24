@@ -13,6 +13,9 @@ const cartSchema = new Schema({
   ],
   totalQty: { type: Number, default: 0, required: true },
   totalCost: { type: Number, default: 0, required: true },
+  discountCode: { type: String, default: null },
+  discountAmount: { type: Number, default: 0 },
+  finalCost: { type: Number, default: 0 },
   user: { type: Schema.Types.ObjectId, ref: "User", required: false },
   createdAt: { type: Date, default: Date.now }
 });

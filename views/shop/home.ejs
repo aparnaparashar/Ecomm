@@ -85,24 +85,28 @@
   <section class="meridian-propositions">
     <div class="propositions-grid">
       <div class="prop-item">
+        <i class="fas fa-cut prop-icon"></i>
         <div class="prop-text">
           <h4>Artisanal Craftsmanship</h4>
-          <p>Hand-finished garments crafted with master European & Indian artisans.</p>
+          <p>Hand-finished garments crafted with master European and Indian artisans.</p>
         </div>
       </div>
       <div class="prop-item">
+        <i class="fas fa-shipping-fast prop-icon"></i>
         <div class="prop-text">
           <h4>Complimentary Dispatch</h4>
           <p>Worldwide insured white-glove delivery on all orders.</p>
         </div>
       </div>
       <div class="prop-item">
+        <i class="fas fa-sync-alt prop-icon"></i>
         <div class="prop-text">
           <h4>Bespoke Exchange</h4>
           <p>30-day personalized return service on all catalogue pieces.</p>
         </div>
       </div>
       <div class="prop-item">
+        <i class="fas fa-headset prop-icon"></i>
         <div class="prop-text">
           <h4>Stylist Concierge</h4>
           <p>Dedicated bespoke sizing guidance and round-the-clock client assistance.</p>
@@ -192,7 +196,15 @@
                 <a href="/products/<%= product._id %>"><%= product.title %></a>
               </h3>
               <div class="card-foot">
-                <span class="price-tag">₹<%= product.price.toLocaleString('en-IN') %></span>
+                <div class="card-price-wrap">
+                  <% if (product.discountPrice && product.discountPrice < product.price) { %>
+                    <span class="price-tag">₹<%= product.discountPrice.toLocaleString('en-IN') %></span>
+                    <span class="price-original">₹<%= product.price.toLocaleString('en-IN') %></span>
+                    <span class="discount-pill-tag">-<%= product.discountPercent %>%</span>
+                  <% } else { %>
+                    <span class="price-tag">₹<%= product.price.toLocaleString('en-IN') %></span>
+                  <% } %>
+                </div>
                 <span class="brand-sub"><%= product.manufacturer %></span>
               </div>
             </div>

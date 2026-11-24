@@ -7,6 +7,8 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
+  status: { type: String, enum: ["active", "suspended"], default: "active" },
+  role: { type: String, default: "Client" },
   createdAt: { type: Date, default: Date.now }
 });
 

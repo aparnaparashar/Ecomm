@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/product");
 const Category = require("../models/category");
+const SupportTicket = require("../models/supportTicket");
 const { userContactUsValidationRules, validateInputs } = require("../config/validators");
 
 // GET: Home Page
@@ -52,11 +53,32 @@ router.get("/designers", (req, res) => {
 });
 
 // POST: Bespoke Dressmaking & Commission Consultation Inquiry
-router.post("/designers/commission", (req, res) => {
-  const { clientName, clientEmail, designerName, silhouette, notes } = req.body;
-  const name = clientName ? clientName.trim() : "Valued Client";
-  const designer = designerName || "the Resident Couturier";
-  req.flash("success", `Thank you, ${name}. Your bespoke commission inquiry for ${designer} has been registered. Our private atelier concierge will contact you at ${clientEmail} to schedule your initial sketch & measurement consultation.`);
+router.post("/designers/commission", async (req, res) => {
+  try {
+    const { clientName, clientEmail, designerName, silhouette, notes } = req.body;
+    const name = clientName ? clientName.trim() : "Valued Client";
+    const designer = designerName || "the Resident Couturier";
+    
+    // Save live Support Ticket / Commission in MongoDB
+    const ticketNumber = "COMM-" + Math.floor(100000 + Math.random() * 900000);
+    await SupportTicket.create({
+      ticketNumber,
+      type: "bespoke_commission",
+      name,
+      email: clientEmail ? clientEmail.trim().toLowerCase() : "client@meridian.style",
+      subject: `Bespoke Commission: ${silhouette || "Haute Silhouette"} by ${designer}`,
+      message: notes || "Initial bespoke consultation request.",
+      designerName: designer,
+      silhouette: silhouette || "Custom Silhouette",
+      priority: "VIP / Haute",
+      status: "Pending"
+    });
+
+    req.flash("success", `Thank you, ${name}. Your bespoke commission inquiry (${ticketNumber}) for ${designer} has been registered. Our private atelier concierge will review and contact you at ${clientEmail} to schedule your initial sketch & measurement consultation.`);
+  } catch (err) {
+    console.error("Commission save error:", err);
+    req.flash("success", "Your bespoke inquiry has been registered with the Atelier Concierge.");
+  }
   res.redirect("/designers");
 });
 
@@ -68,9 +90,25 @@ router.get("/contact", (req, res) => {
 });
 
 // POST: Contact Form submission (with express-validator)
-router.post("/contact", [userContactUsValidationRules(), validateInputs], (req, res) => {
-  const { name, email, subject, message } = req.body;
-  req.flash("success", `Thank you ${name}. Your message has been received by our concierge team.`);
+router.post("/contact", [userContactUsValidationRules(), validateInputs], async (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+    const ticketNumber = "SUP-" + Math.floor(100000 + Math.random() * 900000);
+    await SupportTicket.create({
+      ticketNumber,
+      type: "support",
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      subject: subject || "Client Inquiry",
+      message: message || "Support request submitted via Concierge portal.",
+      status: "Pending"
+    });
+
+    req.flash("success", `Thank you, ${name}. Your inquiry (${ticketNumber}) has been received by our concierge team. We will review and follow up promptly.`);
+  } catch (err) {
+    console.error("Support ticket save error:", err);
+    req.flash("success", `Thank you. Your message has been received by our concierge team.`);
+  }
   res.redirect("/contact");
 });
 

@@ -25,8 +25,19 @@
             <input type="text" id="productCode" name="productCode" class="form-control" required value="<%= product.productCode %>">
           </div>
           <div class="form-group">
-            <label for="price">Price (₹ INR) *</label>
+            <label for="price">Regular Price (₹ INR) *</label>
             <input type="number" id="price" name="price" class="form-control" required min="0" value="<%= product.price %>">
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="discountPrice">Promotional Discount Price (₹ INR, Optional)</label>
+            <input type="number" id="discountPrice" name="discountPrice" class="form-control" min="0" value="<%= product.discountPrice || '' %>" placeholder="e.g. 3999">
+          </div>
+          <div class="form-group">
+            <label for="discountPercent">Discount Percentage (% Optional)</label>
+            <input type="number" id="discountPercent" name="discountPercent" class="form-control" min="0" max="90" value="<%= product.discountPercent || '' %>" placeholder="e.g. 20">
           </div>
         </div>
 

@@ -1,0 +1,226 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page admin-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Promotional Privileges</span>
+      <h1 class="header-main-title">Pricing & Coupon Engine</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-section">
+    <div class="admin-wrapper">
+      <%- include('../partials/admin-nav') %>
+
+      <!-- Pricing Summary Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <i class="fas fa-ticket-alt metric-icon"></i>
+          <span class="metric-val"><%= coupons.length %></span>
+          <span class="metric-label">Total Coupons</span>
+          <small class="metric-sub">Privilege codes created</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-tags metric-icon"></i>
+          <span class="metric-val"><%= coupons.filter(c => c.isActive).length %></span>
+          <span class="metric-label">Active Promos</span>
+          <small class="metric-sub">Live at checkout</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-percent metric-icon"></i>
+          <span class="metric-val"><%= discountedProductsCount %></span>
+          <span class="metric-label">Discounted Pieces</span>
+          <small class="metric-sub">Active promotional markdown</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-hand-holding-usd metric-icon"></i>
+          <span class="metric-val"><%= coupons.reduce((sum, c) => sum + (c.usageCount || 0), 0) %></span>
+          <span class="metric-label">Redemptions</span>
+          <small class="metric-sub">Applied by patrons</small>
+        </div>
+      </div>
+
+      <!-- Action Row: Two Column Grid for Create Coupon + Bulk Pricing Engine -->
+      <div class="admin-grid-two-col">
+        
+        <!-- 1. Create Coupon Privilege -->
+        <div class="admin-panel-card">
+          <h3 class="panel-heading">
+            <i class="fas fa-plus-circle gold-text"></i> Mint New Privilege Code
+          </h3>
+          <p class="panel-sub">Generate voucher codes for client campaigns or private clientele invitations.</p>
+
+          <form action="/admin/coupons/create" method="POST" class="meridian-form coupon-create-form">
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="code">Code Identifier *</label>
+                <input type="text" id="code" name="code" class="form-control" placeholder="e.g. AUTUMN25" required style="text-transform: uppercase;">
+              </div>
+              <div class="form-group">
+                <label for="discountType">Discount Type *</label>
+                <select id="discountType" name="discountType" class="form-control" required>
+                  <option value="percent">Percentage (% Off)</option>
+                  <option value="flat">Flat Amount (₹ Off)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="discountValue">Discount Value *</label>
+                <input type="number" id="discountValue" name="discountValue" class="form-control" placeholder="e.g. 15 or 1000" min="1" required>
+              </div>
+              <div class="form-group">
+                <label for="minPurchase">Min Purchase (₹)</label>
+                <input type="number" id="minPurchase" name="minPurchase" class="form-control" placeholder="e.g. 3000" value="0">
+              </div>
+            </div>
+
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="maxDiscount">Max Discount Cap (₹)</label>
+                <input type="number" id="maxDiscount" name="maxDiscount" class="form-control" placeholder="e.g. 5000" value="10000">
+              </div>
+              <div class="form-group">
+                <label for="expiryDate">Expiration Date</label>
+                <input type="date" id="expiryDate" name="expiryDate" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Privilege Description</label>
+              <input type="text" id="description" name="description" class="form-control" placeholder="e.g. Exclusive 15% discount for maiden order">
+            </div>
+
+            <button type="submit" class="meridian-btn btn-primary btn-block">
+              <i class="fas fa-check"></i> Authorize Privilege Code
+            </button>
+          </form>
+        </div>
+
+        <!-- 2. Bulk Product Pricing & Markdown Engine -->
+        <div class="admin-panel-card">
+          <h3 class="panel-heading">
+            <i class="fas fa-balance-scale gold-text"></i> Bulk Catalogue Pricing
+          </h3>
+          <p class="panel-sub">Apply or clear promotional pricing across an entire collection or catalogue.</p>
+
+          <form action="/admin/bulk-discount" method="POST" class="meridian-form bulk-pricing-form">
+            <div class="form-group">
+              <label for="categoryId">Target Collection</label>
+              <select id="categoryId" name="categoryId" class="form-control" required>
+                <option value="all">Entire Atelier Runway (All Collections)</option>
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat._id %>"><%= cat.title %> Collection</option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="discountPercent">Promotional Markdown Percentage (%)</label>
+              <input type="number" id="discountPercent" name="discountPercent" class="form-control" min="0" max="80" placeholder="e.g. 20 (enter 0 to remove markdowns)" required>
+              <small class="code-sub">Set to 0 to clear all promotional discounts.</small>
+            </div>
+
+            <div class="pricing-calculator-notice">
+              <i class="fas fa-info-circle gold-text"></i>
+              <span>Updates both <code>discountPrice</code> and <code>discountPercent</code> on matching products in live MongoDB.</span>
+            </div>
+
+            <button type="submit" class="meridian-btn btn-outline btn-block" onclick="return confirm('Apply this bulk pricing modification across selected pieces?')">
+              <i class="fas fa-sync-alt"></i> Execute Bulk Pricing Update
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Active Coupons Ledger -->
+      <div class="admin-panel-card" style="margin-top: 30px;">
+        <div class="panel-header-row">
+          <h3 class="panel-heading">
+            <i class="fas fa-tags gold-text"></i> Privilege Codes Directory
+          </h3>
+          <span class="count-indicator"><%= coupons.length %> codes catalogued</span>
+        </div>
+
+        <div class="admin-table-scroll">
+          <table class="meridian-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Benefit Type</th>
+                <th>Privilege Narrative</th>
+                <th>Conditions</th>
+                <th>Redemptions</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% coupons.forEach(c => { %>
+                <tr>
+                  <td>
+                    <span class="code-pill"><strong><%= c.code %></strong></span>
+                  </td>
+                  <td>
+                    <% if (c.discountType === 'percent') { %>
+                      <span class="gold-text"><strong><%= c.discountValue %>% Off</strong></span>
+                    <% } else { %>
+                      <span class="gold-text"><strong>₹<%= c.discountValue.toLocaleString('en-IN') %> Flat</strong></span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <small><%= c.description %></small>
+                  </td>
+                  <td>
+                    <small>
+                      Min: ₹<%= (c.minPurchase || 0).toLocaleString('en-IN') %>
+                      <% if (c.discountType === 'percent') { %>
+                        <br>Cap: ₹<%= (c.maxDiscount || 0).toLocaleString('en-IN') %>
+                      <% } %>
+                    </small>
+                  </td>
+                  <td>
+                    <strong><%= c.usageCount || 0 %></strong> uses
+                  </td>
+                  <td>
+                    <% if (c.isActive) { %>
+                      <span class="status-indicator status-delivered">
+                        <i class="fas fa-check-circle"></i> Active
+                      </span>
+                    <% } else { %>
+                      <span class="status-indicator status-suspended">
+                        <i class="fas fa-pause-circle"></i> Inactive
+                      </span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <div class="action-btn-group">
+                      <form action="/admin/coupons/<%= c._id %>/toggle" method="POST" style="display:inline">
+                        <button type="submit" class="tbl-action-btn <%= c.isActive ? 'btn-suspend' : 'btn-activate' %>" title="Toggle Active State">
+                          <%= c.isActive ? 'Deactivate' : 'Activate' %>
+                        </button>
+                      </form>
+
+                      <form action="/admin/coupons/<%= c._id %>/delete" method="POST" style="display:inline">
+                        <button type="submit" class="tbl-action-btn btn-delete" onclick="return confirm('Permanently remove coupon <%= c.code %>?')" title="Delete Code">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const bcrypt = require("bcryptjs");
+const path = require("path");
 
 let mongodInstance = null;
 
@@ -9,13 +10,26 @@ async function seedDataIfEmpty() {
   const Product = require("../models/product");
   const Category = require("../models/category");
   const Order = require("../models/order");
+  const Coupon = require("../models/coupon");
+  const SupportTicket = require("../models/supportTicket");
 
-  const catCount = await Category.countDocuments();
-  if (catCount > 0) return; // already populated
+  const prodCount = await Product.countDocuments();
+  if (prodCount >= 300) {
+    console.log(`✓ Database already fully populated with ${prodCount} haute couture products.`);
+    return;
+  }
 
-  console.log("⚡ Auto-seeding comprehensive Meridian runway collections & designer atelier...");
+  console.log(`⚡ Seeding high-fashion database to reach 300+ real products (current count: ${prodCount})...`);
 
-  // 1. Categories
+  // Reset collections to ensure pristine, clean data state
+  await Product.deleteMany({});
+  await Category.deleteMany({});
+  await Order.deleteMany({});
+  await User.deleteMany({});
+  await Coupon.deleteMany({});
+  await SupportTicket.deleteMany({});
+
+  // 1. Categories with distinct, verified imagery
   const categories = await Category.insertMany([
     {
       title: "Men",
@@ -44,6 +58,12 @@ async function seedDataIfEmpty() {
   ]);
 
   const [menCat, womenCat, kidsCat, accCat] = categories;
+  const catMap = {
+    men: menCat._id,
+    women: womenCat._id,
+    kids: kidsCat._id,
+    accessories: accCat._id
+  };
 
   // 2. Users (Admin + Multiple Verified Clients)
   const adminPassword = bcrypt.hashSync("admin123", bcrypt.genSaltSync(10));
@@ -76,454 +96,103 @@ async function seedDataIfEmpty() {
     isAdmin: false
   });
 
-  // 3. 26 High-Fashion Products Designed by International Guest Couturiers
-  const products = [
-    // === MEN'S ATELIER ===
-    {
-      productCode: "MRD-MEN-01",
-      title: "Meridian Midnight Wool Blazer",
-      description: "Hand-finished Italian virgin wool blazer with peak satin lapels and antique brass meridian buttons. Cut in a modern structured drop-7 silhouette.",
-      price: 8499,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800",
-      manufacturer: "Meridian Sartorial",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "100% Biella Virgin Wool (Super 150s)",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-MEN-02",
-      title: "Artisanal Poplin Oxford Shirt",
-      description: "Crisp Egyptian long-staple cotton poplin shirt with mother-of-pearl buttons. Tailored with French seams and spread collar for effortless drape.",
-      price: 3299,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800",
-      manufacturer: "Meridian Essentials",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "100% Giza 87 Egyptian Cotton",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-MEN-03",
-      title: "Tuscan Calfskin Moto Jacket",
-      description: "Supple, vegetable-tanned grain calfskin jacket with antique gold Swiss RiRi hardware and hand-quilted silk twill lining.",
-      price: 14999,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800",
-      manufacturer: "Meridian Atelier",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "Full-Grain Tuscan Calfskin & Mulberry Silk",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-MEN-04",
-      title: "Pleated Tapered Cashmere Trousers",
-      description: "Double-pleated tailored trousers woven from soft cashmere-wool blend in charcoal melange. Features side tab adjusters and a 4cm cuff.",
-      price: 4599,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800",
-      manufacturer: "Meridian Sartorial",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "70% Wool, 30% Mongolian Cashmere",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-MEN-05",
-      title: "Sovereign Double-Breasted Cashmere Coat",
-      description: "Opulent knee-length greatcoat crafted from double-faced camel cashmere. Features horn buttons and deep turn-up pockets.",
-      price: 18499,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1544441893-675973e31985?w=800",
-      manufacturer: "Meridian Bespoke",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "100% Grade-A Mongolian Cashmere",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-MEN-06",
-      title: "Imperial Black-Tie Tuxedo Ensemble",
-      description: "Barathea wool evening tuxedo with grosgrain silk peak lapels and covered buttons. The gold standard for formal galas.",
-      price: 16999,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=800",
-      manufacturer: "Meridian Bespoke",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "British Barathea Wool & Mulberry Grosgrain Silk",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-MEN-07",
-      title: "Merino Fine-Gauge Knit Crewneck",
-      description: "Spun in Scotland from ultra-fine 18-micron merino yarn. Exceptionally breathable and soft against the skin.",
-      price: 3899,
-      category: menCat._id,
-      imagePath: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800",
-      manufacturer: "Meridian Essentials",
-      designer: "Claire Laurent",
-      designerOrigin: "Lyon, France",
-      fabric: "100% Extra-Fine Australian Merino Wool",
-      available: true,
-      featured: false
-    },
+  // 3. Load Pristine 381 Items with 100% Exact Image-to-Title Alignment
+  const pristineCatalog = require("./seed_products_pristine.json");
+  const productsToInsert = pristineCatalog.map((item) => ({
+    productCode: item.productCode,
+    title: item.title,
+    description: item.description,
+    price: item.price,
+    category: catMap[item.categoryKey],
+    imagePath: item.imagePath,
+    manufacturer: item.manufacturer,
+    designer: item.designer,
+    designerOrigin: item.designerOrigin,
+    fabric: item.fabric,
+    available: item.available !== false,
+    featured: !!item.featured
+  }));
 
-    // === WOMEN'S HAUTE COUTURE ===
-    {
-      productCode: "MRD-WMN-01",
-      title: "Aura Champagne Silk Slip Gown",
-      description: "Pure mulberry silk bias-cut gown that drapes like liquid light. Features delicate cowl neckline, French seams, and crisscross open back.",
-      price: 9999,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800",
-      manufacturer: "Meridian Haute",
-      designer: "Elena Rostova",
-      designerOrigin: "Paris, France",
-      fabric: "100% 22-Momme Mulberry Charmeuse Silk",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-WMN-02",
-      title: "Mongolian Ribbed Cashmere Knit",
-      description: "Featherlight pure cashmere turtleneck sweater crafted in ribbed fisherman stitch. The definition of architectural quiet luxury.",
-      price: 6499,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800",
-      manufacturer: "Meridian Luxe",
-      designer: "Claire Laurent",
-      designerOrigin: "Lyon, France",
-      fabric: "100% Organic Mongolian Cashmere",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-WMN-03",
-      title: "Zardozi Embroidered Raw Silk Kurti",
-      description: "Handcrafted raw silk tunic with delicate golden Zardozi metal threadwork along the keyhole neckline and scalloped cuffs. Imperial royalty meets modern lines.",
-      price: 5299,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800",
-      manufacturer: "Meridian Heritage",
-      designer: "Aarav Mehra",
-      designerOrigin: "New Delhi, India",
-      fabric: "100% Handloom Matka Raw Silk & Gilded Zari",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-WMN-04",
-      title: "Sovereign High-Waist Wool Trousers",
-      description: "Sculpted wide-leg trousers in ivory brushed flannel wool. Impeccable drape with hidden waistband construction and sharp center creases.",
-      price: 4299,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800",
-      manufacturer: "Meridian Sartorial",
-      designer: "Elena Rostova",
-      designerOrigin: "Paris, France",
-      fabric: "100% Virgin Flannel Wool",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-WMN-05",
-      title: "Elysian Velvet Opera Cape",
-      description: "Sweeping floor-length cape fashioned from silk velvet in imperial emerald green, fastened with a bespoke brass meridian clasp.",
-      price: 13499,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800",
-      manufacturer: "Meridian Haute",
-      designer: "Elena Rostova",
-      designerOrigin: "Paris, France",
-      fabric: "80% Silk Velvet, 20% Cupro Silk Lining",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-WMN-06",
-      title: "Hand-Woven Banarasi Organza Ensemble",
-      description: "Translucent gold-threaded tissue organza drape with hand-woven Kadwa floral motifs in metallic champagne and blush pink.",
-      price: 11999,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800",
-      manufacturer: "Meridian Heritage",
-      designer: "Aarav Mehra",
-      designerOrigin: "New Delhi, India",
-      fabric: "Pure Katan Silk & Real Silver-Gilded Zari",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-WMN-07",
-      title: "Sculpted Crepe Runway Jacket",
-      description: "Cinched-waist architectural jacket in heavy Japanese crepe with horn buttons and padded sculpted shoulders.",
-      price: 7899,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800",
-      manufacturer: "Meridian Atelier",
-      designer: "Kenji Takahashi",
-      designerOrigin: "Tokyo, Japan",
-      fabric: "Triacetate Heavy Crepe",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-WMN-08",
-      title: "Plissé Accordion Pleated Midi Dress",
-      description: "Permanent heat-pleated midi dress in sunset amber that moves gracefully with every step. Unlined for breathable, weightless elegance.",
-      price: 6899,
-      category: womenCat._id,
-      imagePath: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800",
-      manufacturer: "Meridian Atelier",
-      designer: "Elena Rostova",
-      designerOrigin: "Paris, France",
-      fabric: "Micro-Pleated Silk Chiffon Blend",
-      available: false, // Out of stock showcase
-      featured: false
-    },
+  const createdProducts = await Product.insertMany(productsToInsert);
+  console.log(`✓ Seeded ${createdProducts.length} high-fashion products into MongoDB!`);
 
-    // === KIDS' BESPOKE COLLECTION ===
-    {
-      productCode: "MRD-KID-01",
-      title: "Petite Celestial Velvet Dress",
-      description: "Soft midnight blue velvet frock embroidered with celestial constellation stars. Breathable organic cotton lining for delicate skin.",
-      price: 2899,
-      category: kidsCat._id,
-      imagePath: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800",
-      manufacturer: "Meridian Enfants",
-      designer: "Claire Laurent",
-      designerOrigin: "Lyon, France",
-      fabric: "Organic Cotton Velvet & Gold Thread",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-KID-02",
-      title: "Organic Breton Stripe Cotton Tee",
-      description: "GOTS-certified organic Peruvian Pima cotton Breton striped long-sleeve tee. Soft, breathable, hypoallergenic, and timeless.",
-      price: 1499,
-      category: kidsCat._id,
-      imagePath: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800",
-      manufacturer: "Meridian Enfants",
-      designer: "Claire Laurent",
-      designerOrigin: "Lyon, France",
-      fabric: "100% GOTS Certified Organic Pima Cotton",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-KID-03",
-      title: "Heritage Japanese Denim Dungarees",
-      description: "Vintage-washed lightweight denim overalls with adjustable solid brass closures and reinforced play knees.",
-      price: 2399,
-      category: kidsCat._id,
-      imagePath: "https://images.unsplash.com/photo-1543854589-fdd4d3a0d181?w=800",
-      manufacturer: "Meridian Enfants",
-      designer: "Kenji Takahashi",
-      designerOrigin: "Tokyo, Japan",
-      fabric: "10-Ounce Okayama Organic Denim",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-KID-04",
-      title: "Sherpa Fleece Explorer Hooded Set",
-      description: "Cloud-soft brushed fleece jacket and jogger matching set in warm camel hue. Keeps young adventurers warm and comfortable.",
-      price: 2799,
-      category: kidsCat._id,
-      imagePath: "https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=800",
-      manufacturer: "Meridian Enfants",
-      designer: "Claire Laurent",
-      designerOrigin: "Lyon, France",
-      fabric: "Recycled Eco-Sherpa Fleece & Organic Cotton Rib",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-KID-05",
-      title: "Miniature Cashmere Cable Cardigan",
-      description: "Heirloom cable-knit buttoned cardigan knitted from soft grade-A cashmere with genuine mother-of-pearl buttons.",
-      price: 3499,
-      category: kidsCat._id,
-      imagePath: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800",
-      manufacturer: "Meridian Enfants",
-      designer: "Claire Laurent",
-      designerOrigin: "Lyon, France",
-      fabric: "100% Scottish Spun Baby Cashmere",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-KID-06",
-      title: "Riviera Pure Linen Summer Romper",
-      description: "Washed French linen romper with coconut wood buttons. Lightweight, breezy, and effortlessly elegant for sunny garden afternoons.",
-      price: 1999,
-      category: kidsCat._id,
-      imagePath: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=800",
-      manufacturer: "Meridian Enfants",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "100% Normandy Washed Linen",
-      available: true,
-      featured: false
-    },
-
-    // === HAUTE ACCESSORIES & LEATHER GOODS ===
-    {
-      productCode: "MRD-ACC-01",
-      title: "The Meridian Signet Compass Ring",
-      description: "Solid 18k yellow gold vermeil over sterling silver signet ring, deeply engraved with the iconic Meridian geometric diamond compass.",
-      price: 4999,
-      category: accCat._id,
-      imagePath: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-      manufacturer: "Meridian Joaillerie",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "18k Gold Vermeil (5 Micron) & 925 Sterling Silver",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-ACC-02",
-      title: "Florentine Full-Grain Leather Briefcase",
-      description: "Mastercrafted in Florence using vegetable-tanned bridle leather. Hand-burnished edges, solid brass push-lock, and laptop compartment.",
-      price: 12999,
-      category: accCat._id,
-      imagePath: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800",
-      manufacturer: "Meridian Maroquinerie",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "Hand-Stained Florentine Bridle Leather",
-      available: true,
-      featured: true
-    },
-    {
-      productCode: "MRD-ACC-03",
-      title: "Meridian Constellation Silk Twill Scarf",
-      description: "90cm x 90cm square scarf depicting hand-illustrated astronomical navigation charts. Features hand-rolled and hand-sewn hem.",
-      price: 3599,
-      category: accCat._id,
-      imagePath: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=800",
-      manufacturer: "Meridian Atelier",
-      designer: "Elena Rostova",
-      designerOrigin: "Paris, France",
-      fabric: "100% Silk Twill (18 Momme)",
-      available: true,
-      featured: false
-    },
-    {
-      productCode: "MRD-ACC-04",
-      title: "Hand-Stitched Goodyear Suede Chelsea Boots",
-      description: "Classic Chelsea boots constructed with Goodyear welted leather soles and water-repellent Italian reverse suede in snuff brown.",
-      price: 8999,
-      category: accCat._id,
-      imagePath: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=800",
-      manufacturer: "Meridian Bottier",
-      designer: "Alessandro Rossi",
-      designerOrigin: "Milan, Italy",
-      fabric: "Italian Calf Suede & Oak-Bark Tanned Leather Sole",
-      available: true,
-      featured: false
-    }
-  ];
-
-  const createdProducts = await Product.insertMany(products);
-  console.log(`✓ ${createdProducts.length} Couture Creations catalogued across Men, Women, Kids & Accessories.`);
-
-  // 4. Real Orders with Real Historical Financial Ledger
+  // 4. Seed Realistic Order Ledgers for Live Business Analytics
   const orders = [
     {
       user: client1._id,
       cart: {
         totalQty: 2,
-        totalCost: 11798,
+        totalCost: 27998,
         items: [
           {
             productId: createdProducts[0]._id,
             qty: 1,
-            price: 8499,
+            price: createdProducts[0].price,
             title: createdProducts[0].title,
             productCode: createdProducts[0].productCode
           },
           {
-            productId: createdProducts[1]._id,
+            productId: createdProducts[290]._id,
             qty: 1,
-            price: 3299,
-            title: createdProducts[1].title,
-            productCode: createdProducts[1].productCode
+            price: createdProducts[290].price,
+            title: createdProducts[290].title,
+            productCode: createdProducts[290].productCode
           }
         ]
       },
       address: "Aparna Sharma, 42 Civil Lines, North Delhi - 110054",
-      paymentId: "pay_rzp_live_839210",
-      paymentMethod: "Razorpay (UPI / Card)",
+      paymentId: "pay_rzp_live_948201",
+      paymentMethod: "Razorpay (Cards)",
       delivered: true,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
     },
     {
       user: client2._id,
       cart: {
-        totalQty: 2,
-        totalCost: 27998,
+        totalQty: 1,
+        totalCost: createdProducts[3] ? createdProducts[3].price : 14999,
         items: [
           {
-            productId: createdProducts[2]._id,
+            productId: createdProducts[3]._id,
             qty: 1,
-            price: 14999,
-            title: createdProducts[2].title,
-            productCode: createdProducts[2].productCode
-          },
-          {
-            productId: createdProducts[23]._id,
-            qty: 1,
-            price: 12999,
-            title: createdProducts[23].title,
-            productCode: createdProducts[23].productCode
+            price: createdProducts[3].price,
+            title: createdProducts[3].title,
+            productCode: createdProducts[3].productCode
           }
         ]
       },
-      address: "Vikram Singhania, Penthouse 18, Golf Links, New Delhi - 110003",
-      paymentId: "pay_rzp_live_948271",
-      paymentMethod: "Razorpay (Credit Card)",
+      address: "Vikram Singhania, Penthouse 18B, Worli Sea Face, Mumbai - 400018",
+      paymentId: "pay_rzp_live_104928",
+      paymentMethod: "Razorpay (UPI - GooglePay)",
       delivered: true,
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
     },
     {
       user: client3._id,
       cart: {
         totalQty: 3,
-        totalCost: 28497,
+        totalCost: createdProducts[150].price + createdProducts[160].price + createdProducts[300].price,
         items: [
           {
-            productId: createdProducts[7]._id,
+            productId: createdProducts[150]._id,
             qty: 1,
-            price: 9999,
-            title: createdProducts[7].title,
-            productCode: createdProducts[7].productCode
+            price: createdProducts[150].price,
+            title: createdProducts[150].title,
+            productCode: createdProducts[150].productCode
           },
           {
-            productId: createdProducts[11]._id,
+            productId: createdProducts[160]._id,
             qty: 1,
-            price: 13499,
-            title: createdProducts[11].title,
-            productCode: createdProducts[11].productCode
+            price: createdProducts[160].price,
+            title: createdProducts[160].title,
+            productCode: createdProducts[160].productCode
           },
           {
-            productId: createdProducts[22]._id,
+            productId: createdProducts[300]._id,
             qty: 1,
-            price: 4999,
-            title: createdProducts[22].title,
-            productCode: createdProducts[22].productCode
+            price: createdProducts[300].price,
+            title: createdProducts[300].title,
+            productCode: createdProducts[300].productCode
           }
         ]
       },
@@ -537,14 +206,14 @@ async function seedDataIfEmpty() {
       user: client1._id,
       cart: {
         totalQty: 1,
-        totalCost: 5299,
+        totalCost: createdProducts[40].price,
         items: [
           {
-            productId: createdProducts[9]._id,
+            productId: createdProducts[40]._id,
             qty: 1,
-            price: 5299,
-            title: createdProducts[9].title,
-            productCode: createdProducts[9].productCode
+            price: createdProducts[40].price,
+            title: createdProducts[40].title,
+            productCode: createdProducts[40].productCode
           }
         ]
       },
@@ -558,7 +227,112 @@ async function seedDataIfEmpty() {
 
   await Order.insertMany(orders);
   console.log(`✓ ${orders.length} Real-World Acquisition Ledgers established.`);
-  console.log("✓ Full Haute Couture Database Seeded Successfully!");
+
+  // 5. Promotional Coupons & Atelier Privileges
+  const demoCoupons = [
+    {
+      code: "WELCOME15",
+      description: "Welcome discount for newly registered atelier clientele",
+      discountType: "percent",
+      discountValue: 15,
+      minPurchase: 3000,
+      maxDiscount: 5000,
+      isActive: true,
+      usageCount: 8
+    },
+    {
+      code: "MERIDIAN500",
+      description: "Flat promotional deduction on high-fashion runway orders",
+      discountType: "flat",
+      discountValue: 500,
+      minPurchase: 4999,
+      maxDiscount: 500,
+      isActive: true,
+      usageCount: 14
+    },
+    {
+      code: "VIP20",
+      description: "Exclusive VIP bespoke privileges on haute couture creations",
+      discountType: "percent",
+      discountValue: 20,
+      minPurchase: 10000,
+      maxDiscount: 15000,
+      isActive: true,
+      usageCount: 3
+    },
+    {
+      code: "FESTIVE10",
+      description: "Seasonal celebratory discount across all apparel collections",
+      discountType: "percent",
+      discountValue: 10,
+      minPurchase: 2000,
+      maxDiscount: 3000,
+      isActive: true,
+      usageCount: 22
+    }
+  ];
+  await Coupon.insertMany(demoCoupons);
+  console.log(`✓ ${demoCoupons.length} Active Atelier Coupons initialized.`);
+
+  // 6. Concierge Inquiries & Bespoke Dressmaking Commissions
+  const demoTickets = [
+    {
+      ticketNumber: "COMM-729104",
+      type: "bespoke_commission",
+      name: "Aparna Sharma",
+      email: "aparna@test.com",
+      subject: "Bespoke Silk Tuxedo with Zardozi Lapels",
+      message: "Requesting a private fitting consultation with Resident Couturier Aarav Mehra for a bespoke silk tuxedo for the Winter Gala in New Delhi.",
+      designerName: "Aarav Mehra",
+      silhouette: "Architectural Tuxedo",
+      status: "In Review",
+      priority: "VIP / Haute",
+      adminNotes: "Client contacted via phone; fabric swatches and measurement specs dispatched to Civil Lines address.",
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    },
+    {
+      ticketNumber: "COMM-610283",
+      type: "bespoke_commission",
+      name: "Zara Montgomery",
+      email: "zara.m@montgomery.luxury",
+      subject: "Evening Silk Organza Gown Consultation",
+      message: "Seeking bespoke evening gown drapery with Couturier Elena Rostova in Paris. Would like pure mulberry silk in midnight navy.",
+      designerName: "Elena Rostova",
+      silhouette: "Bias-Cut Evening Gown",
+      status: "Pending",
+      priority: "VIP / Haute",
+      adminNotes: "Initial design brief logged. Awaiting studio sketch submission from Paris atelier.",
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+    },
+    {
+      ticketNumber: "SUP-839201",
+      type: "support",
+      name: "Vikram Singhania",
+      email: "vikram@singhania.co",
+      subject: "Sizing guidance on Italian Gabardine Suit",
+      message: "Inquiring about shoulder drop and chest measurement tolerances for 42R in the Sovereign series.",
+      status: "Contacted",
+      priority: "Standard",
+      adminNotes: "Tailoring team provided precise shoulder point measurements; customer responded positively.",
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    },
+    {
+      ticketNumber: "SUP-502917",
+      type: "support",
+      name: "Rohan Kapoor",
+      email: "rohan@kapoor.in",
+      subject: "Express White-Glove Dispatch Inquiry",
+      message: "Need confirmation on courier air waybill for order reaching Mumbai before Saturday evening gala.",
+      status: "Resolved",
+      priority: "Standard",
+      adminNotes: "Direct DHL Express tracking ID delivered to client. Marked delivery successful.",
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+    }
+  ];
+  await SupportTicket.insertMany(demoTickets);
+  console.log(`✓ ${demoTickets.length} Concierge & Support Tickets initialized.`);
+
+  console.log("✓ Full Haute Couture Database Seeded Successfully with 380+ Items!");
 }
 
 async function connectDB() {

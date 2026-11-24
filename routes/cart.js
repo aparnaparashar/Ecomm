@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Order = require("../models/order");
+const Coupon = require("../models/coupon");
 const middleware = require("../middleware");
 
 // Initialize Razorpay Client with provided test credentials
@@ -194,6 +195,70 @@ router.post("/remove/:id", async (req, res) => {
   }
 });
 
+// POST: Apply Promotional Coupon Privilege
+router.post("/apply-coupon", async (req, res) => {
+  try {
+    if (!req.session.cart) {
+      req.flash("error", "Your shopping bag is empty.");
+      return res.redirect("/cart/shopping-cart");
+    }
+
+    const cart = await Cart.findById(req.session.cart._id);
+    if (!cart) return res.redirect("/cart/shopping-cart");
+
+    const code = (req.body.couponCode || "").trim().toUpperCase();
+    if (!code) {
+      cart.discountCode = null;
+      cart.discountAmount = 0;
+      cart.finalCost = cart.totalCost;
+      await cart.save();
+      req.session.cart = cart;
+      req.flash("success", "Promotional code cleared.");
+      return res.redirect("/cart/shopping-cart");
+    }
+
+    const coupon = await Coupon.findOne({ code, isActive: true });
+    if (!coupon) {
+      req.flash("error", `Privilege code "${code}" is invalid or inactive.`);
+      return res.redirect("/cart/shopping-cart");
+    }
+
+    if (cart.totalCost < (coupon.minPurchase || 0)) {
+      req.flash("error", `Code "${code}" requires minimum purchase of ₹${coupon.minPurchase.toLocaleString('en-IN')}.`);
+      return res.redirect("/cart/shopping-cart");
+    }
+
+    let discount = 0;
+    if (coupon.discountType === "percent") {
+      discount = Math.round((cart.totalCost * coupon.discountValue) / 100);
+      if (coupon.maxDiscount && discount > coupon.maxDiscount) {
+        discount = coupon.maxDiscount;
+      }
+    } else {
+      discount = coupon.discountValue;
+    }
+
+    if (discount > cart.totalCost) discount = cart.totalCost;
+
+    cart.discountCode = coupon.code;
+    cart.discountAmount = discount;
+    cart.finalCost = cart.totalCost - discount;
+    await cart.save();
+    req.session.cart = cart;
+
+    // Increment usage
+    coupon.usageCount = (coupon.usageCount || 0) + 1;
+    await coupon.save();
+
+    req.flash("success", `Privilege code "${coupon.code}" applied! Saved ₹${discount.toLocaleString('en-IN')}.`);
+    res.redirect("/cart/shopping-cart");
+  } catch (err) {
+    console.error("Apply coupon error:", err);
+    req.flash("error", "Could not apply privilege code.");
+    res.redirect("/cart/shopping-cart");
+  }
+});
+
 // GET: Checkout Form with Razorpay Order Generation (Experiment 10 & 11)
 router.get("/checkout", middleware.isLoggedIn, async (req, res) => {
   try {
@@ -208,7 +273,8 @@ router.get("/checkout", middleware.isLoggedIn, async (req, res) => {
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID || "rzp_test_U3kIReIGj4JB7C";
-    const amountInPaise = Math.round(cart.totalCost * 100);
+    const payableCost = (cart.finalCost && cart.finalCost > 0) ? cart.finalCost : cart.totalCost;
+    const amountInPaise = Math.round(payableCost * 100);
 
     let razorpayOrder = null;
     try {
@@ -233,7 +299,7 @@ router.get("/checkout", middleware.isLoggedIn, async (req, res) => {
 
     res.render("shop/checkout", {
       pageName: "Secure Checkout",
-      totalCost: cart.totalCost,
+      totalCost: payableCost,
       totalQty: cart.totalQty,
       cart,
       razorpayOrder,

@@ -12,6 +12,7 @@
 
   <section class="meridian-section admin-section">
     <div class="admin-wrapper">
+      <%- include('../partials/admin-nav') %>
       
       <!-- Live Database Metrics Strip (Live MongoDB Aggregates) -->
       <div class="metrics-grid">
@@ -34,10 +35,10 @@
           <small class="metric-sub"><%= stats.inStockCount %> In Stock · <%= stats.featuredCount %> Featured</small>
         </div>
         <div class="metric-card">
-          <i class="fas fa-users metric-icon"></i>
-          <span class="metric-val"><%= stats.totalClients %></span>
-          <span class="metric-label">Registered Clientele</span>
-          <small class="metric-sub"><%= stats.totalCategories %> Active Collections</small>
+          <i class="fas fa-headset metric-icon"></i>
+          <span class="metric-val"><%= stats.pendingTicketsCount || 0 %></span>
+          <span class="metric-label">Concierge Inquiries</span>
+          <small class="metric-sub"><a href="/admin/support" class="gold-text">Resolve Tickets &rarr;</a></small>
         </div>
       </div>
 
@@ -46,8 +47,17 @@
         <a href="/admin/add-product" class="meridian-btn btn-primary">
           <i class="fas fa-plus"></i> Curate New Piece
         </a>
+        <a href="/admin/users" class="meridian-btn btn-outline">
+          <i class="fas fa-users-cog"></i> Manage Clientele
+        </a>
+        <a href="/admin/support" class="meridian-btn btn-outline">
+          <i class="fas fa-headset"></i> Concierge Tickets
+        </a>
+        <a href="/admin/coupons" class="meridian-btn btn-outline">
+          <i class="fas fa-tags"></i> Pricing & Coupons
+        </a>
         <a href="/admin/orders" class="meridian-btn btn-outline">
-          <i class="fas fa-clipboard-list"></i> View All Orders
+          <i class="fas fa-clipboard-list"></i> Order Ledger
         </a>
       </div>
 
@@ -73,7 +83,7 @@
       </div>
 
       <!-- Products Management Table (Experiment 3) -->
-      <div class="admin-panel-card">
+      <div class="admin-panel-card" id="inventory-panel">
         <div class="panel-header-row">
           <h3 class="panel-heading"><i class="fas fa-boxes gold-text"></i> Catalogue Inventory</h3>
           <a href="/admin/add-product" class="meridian-btn btn-outline btn-sm">+ Add Piece</a>

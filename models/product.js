@@ -6,6 +6,8 @@ const productSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
+  discountPrice: { type: Number, default: null }, // Optional promotional price
+  discountPercent: { type: Number, default: 0 },   // e.g. 10 for 10% off
   category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
   imagePath: { type: String, required: true, default: "/images/default-product.jpg" },
   manufacturer: { type: String, default: "Meridian Atelier" },

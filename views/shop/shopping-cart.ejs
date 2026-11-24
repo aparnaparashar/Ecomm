@@ -100,6 +100,13 @@
               <span>₹<%= totalCost.toLocaleString('en-IN') %></span>
             </div>
 
+            <% if (typeof cart !== 'undefined' && cart && cart.discountCode) { %>
+              <div class="summary-line discount-applied-line">
+                <span>Privilege Code (<%= cart.discountCode %>)</span>
+                <span class="discount-amount-text">- ₹<%= cart.discountAmount.toLocaleString('en-IN') %></span>
+              </div>
+            <% } %>
+
             <div class="summary-line">
               <span>White-Glove Shipping</span>
               <span class="complimentary-text">COMPLIMENTARY</span>
@@ -110,11 +117,27 @@
               <span class="complimentary-text">INCLUDED</span>
             </div>
 
+            <!-- Coupon Input Form -->
+            <form action="/cart/apply-coupon" method="POST" class="cart-coupon-form">
+              <div class="coupon-field-wrap">
+                <input 
+                  type="text" 
+                  name="couponCode" 
+                  class="form-control-compact" 
+                  placeholder="<%= (typeof cart !== 'undefined' && cart && cart.discountCode) ? cart.discountCode : 'Privilege / Promo Code' %>"
+                  style="text-transform: uppercase;"
+                >
+                <button type="submit" class="meridian-btn btn-outline btn-sm">
+                  <%= (typeof cart !== 'undefined' && cart && cart.discountCode) ? 'Update' : 'Apply' %>
+                </button>
+              </div>
+            </form>
+
             <div class="summary-divider"></div>
 
             <div class="summary-total-row">
               <span class="total-label">Grand Total</span>
-              <span class="total-amount">₹<%= totalCost.toLocaleString('en-IN') %></span>
+              <span class="total-amount">₹<%= (typeof cart !== 'undefined' && cart && cart.finalCost && cart.finalCost > 0 ? cart.finalCost : totalCost).toLocaleString('en-IN') %></span>
             </div>
 
             <div class="summary-cta-group">

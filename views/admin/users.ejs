@@ -1,0 +1,139 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="meridian-page admin-page">
+  <header class="meridian-page-header">
+    <div class="header-container">
+      <span class="header-pre">Atelier Authority</span>
+      <h1 class="header-main-title">Clientele & User Control</h1>
+      <div class="gold-accent-line"></div>
+    </div>
+  </header>
+
+  <section class="meridian-section admin-section">
+    <div class="admin-wrapper">
+      <%- include('../partials/admin-nav') %>
+
+      <!-- Users Summary Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <i class="fas fa-users metric-icon"></i>
+          <span class="metric-val"><%= users.length %></span>
+          <span class="metric-label">Registered Accounts</span>
+          <small class="metric-sub">Full clientele database</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-user-check metric-icon"></i>
+          <span class="metric-val"><%= users.filter(u => u.status !== 'suspended').length %></span>
+          <span class="metric-label">Active Patrons</span>
+          <small class="metric-sub">In good standing</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-user-slash metric-icon"></i>
+          <span class="metric-val"><%= users.filter(u => u.status === 'suspended').length %></span>
+          <span class="metric-label">Suspended</span>
+          <small class="metric-sub">Access restricted</small>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-user-shield metric-icon"></i>
+          <span class="metric-val"><%= users.filter(u => u.isAdmin).length %></span>
+          <span class="metric-label">Curator Admins</span>
+          <small class="metric-sub">Full console access</small>
+        </div>
+      </div>
+
+      <!-- Users Table Card -->
+      <div class="admin-panel-card">
+        <div class="panel-header-row">
+          <h3 class="panel-heading">
+            <i class="fas fa-address-book gold-text"></i> Client Directory & Permissions
+          </h3>
+          <span class="count-indicator"><%= users.length %> accounts registered</span>
+        </div>
+
+        <div class="admin-table-scroll">
+          <table class="meridian-table">
+            <thead>
+              <tr>
+                <th>Client Details</th>
+                <th>Privilege Role</th>
+                <th>Account Status</th>
+                <th>Orders Placed</th>
+                <th>Lifetime Value</th>
+                <th>Joined Date</th>
+                <th>Administrative Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(u => { %>
+                <tr>
+                  <td>
+                    <strong><%= u.username %></strong>
+                    <br>
+                    <small class="code-sub"><%= u.email %></small>
+                  </td>
+                  <td>
+                    <form action="/admin/users/<%= u._id %>/update-role" method="POST" class="inline-role-form">
+                      <select name="role" class="form-control-compact" onchange="this.form.submit()">
+                        <option value="Client" <%= u.role === 'Client' || !u.role ? 'selected' : '' %>>Client</option>
+                        <option value="VIP Patron" <%= u.role === 'VIP Patron' ? 'selected' : '' %>>VIP Patron</option>
+                        <option value="Atelier Staff" <%= u.role === 'Atelier Staff' ? 'selected' : '' %>>Atelier Staff</option>
+                        <option value="Curator / Admin" <%= u.isAdmin || u.role === 'Curator / Admin' ? 'selected' : '' %>>Curator / Admin</option>
+                      </select>
+                    </form>
+                  </td>
+                  <td>
+                    <% if (u.status === 'suspended') { %>
+                      <span class="status-indicator status-suspended">
+                        <i class="fas fa-ban"></i> Suspended
+                      </span>
+                    <% } else { %>
+                      <span class="status-indicator status-delivered">
+                        <i class="fas fa-check-circle"></i> Active
+                      </span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <strong><%= u.orderCount %></strong> acquisitions
+                  </td>
+                  <td>
+                    <span class="price-tag-sm">₹<%= (u.totalSpent || 0).toLocaleString('en-IN') %></span>
+                  </td>
+                  <td>
+                    <small><%= new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></small>
+                  </td>
+                  <td>
+                    <div class="action-btn-group">
+                      <!-- Toggle Status -->
+                      <form action="/admin/users/<%= u._id %>/toggle-status" method="POST" style="display:inline">
+                        <% if (u.status === 'suspended') { %>
+                          <button type="submit" class="tbl-action-btn btn-activate" title="Reactivate Account">
+                            <i class="fas fa-user-check"></i> Activate
+                          </button>
+                        <% } else { %>
+                          <button type="submit" class="tbl-action-btn btn-suspend" title="Suspend Account" <%= u.email === currentUser.email ? 'disabled' : '' %>>
+                            <i class="fas fa-user-slash"></i> Suspend
+                          </button>
+                        <% } %>
+                      </form>
+
+                      <!-- Delete User -->
+                      <form action="/admin/users/<%= u._id %>/delete" method="POST" style="display:inline">
+                        <button type="submit" class="tbl-action-btn btn-delete" onclick="return confirm('Permanently remove user <%= u.username %>?')" title="Delete Account" <%= u.email === currentUser.email ? 'disabled' : '' %>>
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
