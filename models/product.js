@@ -16,6 +16,8 @@ const productSchema = new Schema({
   fabric: { type: String, default: "100% Pure Virgin Wool & Mulberry Silk" },
   available: { type: Boolean, default: true },
   featured: { type: Boolean, default: false },
+  ratingAverage: { type: Number, default: 0 },
+  ratingCount: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 

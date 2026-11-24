@@ -99,12 +99,14 @@ const productRoutes = require("./routes/products");
 const cartRoutes = require("./routes/cart");
 const userRoutes = require("./routes/user");
 const adminRoutes = require("./routes/admin");
+const assistantRoutes = require("./routes/assistant");
 
 app.use("/", pageRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
+app.use("/assistant", assistantRoutes);
 
 // 404 Handler
 app.use((req, res) => {
